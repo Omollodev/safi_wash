@@ -1,0 +1,84 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}{{ BUSINESS.name }}{% endblock %}</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="{% static 'css/theme.css' %}" rel="stylesheet">
+  <link href="{% static 'css/app.css' %}" rel="stylesheet">
+  {% block head %}{% endblock %}
+</head>
+<body>
+{% block nav %}<nav class="navbar navbar-expand-lg app-nav sticky-top">
+  <div class="container-fluid">
+    <a class="navbar-brand fw-semibold" href="{% url 'dashboard:landing' %}"><i class="bi bi-droplet-half"></i> {{ BUSINESS.name }}</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+    <div class="collapse navbar-collapse" id="nav">
+      <ul class="navbar-nav me-auto">
+        {% if user.is_authenticated %}
+          {% if user.is_staff_role %}
+            <li class="nav-item"><a class="nav-link" href="{% url 'dashboard:home' %}"><i class="bi bi-speedometer2" aria-hidden="true"></i>Dashboard</a></li>
+            <li class="nav-item"><a class="nav-link" href="{% url 'jobs:list' %}"><i class="bi bi-clipboard-check" aria-hidden="true"></i>Jobs</a></li>
+            <li class="nav-item"><a class="nav-link" href="{% url 'customers:list' %}"><i class="bi bi-people" aria-hidden="true"></i>Customers</a></li>
+            <li class="nav-item"><a class="nav-link" href="{% url 'catalog:list' %}"><i class="bi bi-tags" aria-hidden="true"></i>Services</a></li>
+            <li class="nav-item"><a class="nav-link" href="{% url 'workforce:list' %}"><i class="bi bi-person-badge" aria-hidden="true"></i>Workers</a></li>
+            <li class="nav-item"><a class="nav-link" href="{% url 'dashboard:reports' %}"><i class="bi bi-graph-up" aria-hidden="true"></i>Reports</a></li>
+            {% if user.role == 'admin' %}<li class="nav-item"><a class="nav-link" href="{% url 'accounts:user_list' %}"><i class="bi bi-shield-lock" aria-hidden="true"></i>Users</a></li>{% endif %}
+          {% elif user.is_worker %}
+            <li class="nav-item"><a class="nav-link" href="{% url 'workforce:my_jobs' %}"><i class="bi bi-list-check" aria-hidden="true"></i>My jobs</a></li>
+            <li class="nav-item"><a class="nav-link" href="{% url 'jobs:list' %}"><i class="bi bi-clipboard-check" aria-hidden="true"></i>All jobs</a></li>
+          {% else %}
+            <li class="nav-item"><a class="nav-link" href="{% url 'portal:home' %}"><i class="bi bi-car-front" aria-hidden="true"></i>My account</a></li>
+            <li class="nav-item"><a class="nav-link" href="{% url 'portal:book' %}"><i class="bi bi-calendar-plus" aria-hidden="true"></i>Book a wash</a></li>
+          {% endif %}
+        {% endif %}
+      </ul>
+      <ul class="navbar-nav align-items-lg-center">
+        {% if user.is_authenticated %}
+          <li class="nav-item"><a class="nav-link position-relative" href="{% url 'notifications:list' %}" aria-label="Notifications">
+            <i class="bi bi-bell"></i>
+            <span id="bell-count" class="badge rounded-pill bg-danger {% if not unread_count %}d-none{% endif %}">{{ unread_count }}</span>
+          </a></li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">{{ user }} <small class="text-secondary">({{ user.get_role_display }})</small></a>
+            <ul class="dropdown-menu dropdown-menu-end">
+              <li><a class="dropdown-item" href="{% url 'accounts:profile' %}"><i class="bi bi-person-circle" aria-hidden="true"></i>Profile</a></li>
+              <li><a class="dropdown-item" href="{% url 'accounts:change_password' %}"><i class="bi bi-key" aria-hidden="true"></i>Change password</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><form method="post" action="{% url 'accounts:logout' %}">{% csrf_token %}<button class="dropdown-item" type="submit"><i class="bi bi-box-arrow-right" aria-hidden="true"></i>Log out</button></form></li>
+            </ul>
+          </li>
+        {% else %}
+          <li class="nav-item"><a class="nav-link" href="{% url 'accounts:login' %}"><i class="bi bi-box-arrow-in-right" aria-hidden="true"></i>Log in</a></li>
+          <li class="nav-item"><a class="btn btn-primary btn-sm ms-lg-2" href="{% url 'portal:signup' %}"><i class="bi bi-person-plus" aria-hidden="true"></i> Sign up</a></li>
+        {% endif %}
+      </ul>
+    </div>
+  </div>
+</nav>{% endblock %}
+
+<main class="{% block main_class %}container-fluid container-xl py-4{% endblock %}">
+  {% block messages %}{% for message in messages %}
+    <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags|default:'info' }}{% endif %} alert-dismissible fade show" role="alert">
+      {{ message }}<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+  {% endfor %}{% endblock %}
+  {% block content %}{% endblock %}
+</main>
+
+{% block footer %}<footer class="text-center text-secondary small py-4">
+  {{ BUSINESS.name }} &middot; {{ BUSINESS.phone }} &middot; Open-source community project &mdash; a star on GitHub helps other students find it &#11088;
+</footer>{% endblock %}
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>window.CARWASH = { notificationsUrl: "{% url 'notifications:api' %}", pollMs: 8000, toastMs: 7000, listUrl: "{% url 'notifications:list' %}" };</script>
+<script src="{% static 'js/app.js' %}"></script>
+{% if user.is_authenticated %}<script src="{% static 'js/toast.js' %}" defer></script>{% endif %}
+{% block scripts %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% load money %}
+{% block title %}{{ vehicle.plate_number }}{% endblock %}
+{% block content %}
+<h1 class="h3">{{ vehicle.plate_number }} <small class="text-secondary">{{ vehicle.description }}</small></h1>
+<p class="text-secondary">Owner: {% if user.is_staff_role %}<a href="{% url 'customers:detail' vehicle.customer.pk %}">{{ vehicle.customer }}</a>{% else %}{{ vehicle.customer }}{% endif %}
+  &middot; {{ vehicle.get_vehicle_type_display }}{% if vehicle.mileage %} &middot; {{ vehicle.mileage }} km{% endif %}</p>
+{% if vehicle.notes %}<p>{{ vehicle.notes }}</p>{% endif %}
+<div class="card shadow-sm"><div class="card-header">Service history</div>
+  <ul class="list-group list-group-flush">
+    {% for j in jobs %}
+    <li class="list-group-item d-flex justify-content-between">
+      <a href="{% url 'jobs:detail' j.pk %}">Job #{{ j.pk }} &middot; {{ j.created_at|date:"d M Y" }}</a>
+      <span><span class="badge {{ j.status_badge }}">{{ j.get_status_display }}</span> {{ j.total_price|money }}</span>
+    </li>
+    {% empty %}<li class="list-group-item text-secondary">No jobs yet.</li>{% endfor %}
+  </ul>
+</div>
+{% endblock %}

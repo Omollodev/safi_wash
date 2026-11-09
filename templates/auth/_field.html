@@ -1,0 +1,11 @@
+{% load ui %}
+<div class="auth-field{% if half %} auth-field--half{% endif %}">
+  <label for="{{ field.id_for_label }}">{{ field.label }}{% if not field.field.required %} <span class="auth-opt">(optional)</span>{% endif %}</label>
+  {% if field.widget_type == 'password' %}
+    <div class="pw">{{ field|auth_input }}<button type="button" class="pw__toggle" hidden aria-controls="{{ field.id_for_label }}" aria-label="Show password">Show</button></div>
+  {% else %}
+    {{ field|auth_input }}
+  {% endif %}
+  {% if field.help_text and field.widget_type != 'password' %}<p class="auth-hint" id="{{ field.auto_id }}_hint">{{ field.help_text }}</p>{% endif %}
+  {% if field.errors %}<ul class="auth-err" id="{{ field.auto_id }}_err">{% for error in field.errors %}<li><i class="bi bi-exclamation-circle" aria-hidden="true"></i> {{ error }}</li>{% endfor %}</ul>{% endif %}
+</div>

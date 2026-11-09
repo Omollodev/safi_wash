@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% load static %}
+{% block nav %}{% endblock %}
+{% block footer %}{% endblock %}
+{% block messages %}{% endblock %}
+{% block head %}<link href="{% static 'css/auth.css' %}" rel="stylesheet">{% endblock %}
+{% block main_class %}auth{% endblock %}
+
+{% block content %}
+<aside class="auth__brand">
+  <a class="auth__logo" href="{% url 'dashboard:landing' %}"><i class="bi bi-droplet-half" aria-hidden="true"></i> {{ BUSINESS.name }}</a>
+  <div class="auth__pitch">
+    <h2>{% block brand_title %}Your car, tracked from drop-off to pickup.{% endblock %}</h2>
+    <p>{% block brand_text %}Follow every service as it is ticked off, and pay from your phone when it shines.{% endblock %}</p>
+    <div class="ticket" aria-hidden="true">
+      <div class="ticket__head">
+        <div><strong>KAA 123A</strong><span>Toyota Axio</span></div>
+        <span class="ticket__tag">Example job</span>
+      </div>
+      <ol class="ticket__steps">
+        <li class="is-done"><i class="bi bi-check-lg"></i><span>Checked in</span><time>9:02</time></li>
+        <li class="is-done"><i class="bi bi-check-lg"></i><span>Exterior wash</span><time>9:21</time></li>
+        <li class="is-now"><i class="bi bi-droplet-fill"></i><span>Interior vacuum</span><time>In progress</time></li>
+        <li><i class="bi bi-circle"></i><span>Ready for pickup</span><time></time></li>
+      </ol>
+      <div class="ticket__foot"><span>KES 900</span><span class="ticket__pay"><i class="bi bi-phone"></i> Pay with M-Pesa</span></div>
+    </div>
+  </div>
+  <p class="auth__fine">{{ BUSINESS.address }}<br>{{ BUSINESS.hours }}</p>
+</aside>
+
+<section class="auth__panel">
+  <div class="auth__box {% block box_class %}{% endblock %}">
+    {% for message in messages %}
+      <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags|default:'info' }}{% endif %}" role="status">{{ message }}</div>
+    {% endfor %}
+    {% block auth_body %}{% endblock %}
+  </div>
+  <a class="auth__back" href="{% url 'dashboard:landing' %}"><i class="bi bi-arrow-left" aria-hidden="true"></i> Back to home page</a>
+</section>
+{% endblock %}
+
+{% block scripts %}<script src="{% static 'js/auth.js' %}" defer></script>{% endblock %}

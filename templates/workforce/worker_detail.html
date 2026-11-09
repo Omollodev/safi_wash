@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% load money %}
+{% block title %}{{ worker.name }}{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-start mb-3">
+  <div>
+    <h1 class="h3 mb-0">{{ worker.name }}</h1>
+    <div class="text-secondary">{{ worker.employee_id|default:"-" }} &middot; {{ worker.user.phone|default:"no phone" }}</div>
+  </div>
+  <div class="d-flex gap-2">
+    <form method="post" action="{% url 'workforce:toggle_availability' worker.pk %}">{% csrf_token %}
+      <button class="btn btn-outline-secondary">{% if worker.is_available %}Mark unavailable{% else %}Mark available{% endif %}</button></form>
+    <a class="btn btn-primary" href="{% url 'workforce:edit' worker.pk %}"><i class="bi bi-pencil-square" aria-hidden="true"></i> Edit</a>
+  </div>
+</div>
+<div class="row g-3">
+  <div class="col-lg-4"><div class="card shadow-sm"><div class="card-body">
+    <p class="mb-1"><strong>Status:</strong> {% if busy %}<span class="badge bg-primary">Busy</span>{% elif worker.is_available %}<span class="badge bg-success">Free</span>{% else %}<span class="badge bg-secondary">Unavailable</span>{% endif %}</p>
+    <p class="mb-1"><strong>Rating:</strong> {{ worker.rating }} / 5 ({{ worker.total_ratings }} ratings)</p>
+    <p class="mb-1"><strong>Hired:</strong> {{ worker.hired_date|default:"-" }}</p>
+    <p class="mb-1"><strong>Skills:</strong> {% for s in worker.skills.all %}<span class="badge bg-info text-dark">{{ s }}</span> {% empty %}<span class="text-secondary">Generalist</span>{% endfor %}</p>
+    {% if worker.notes %}<p class="small mt-2">{{ worker.notes }}</p>{% endif %}
+  </div></div></div>
+  <div class="col-lg-8"><div class="card shadow-sm"><div class="card-header">Recent jobs</div>
+    <ul class="list-group list-group-flush">
+      {% for j in recent_jobs %}
+      <li class="list-group-item d-flex justify-content-between">
+        <a href="{% url 'jobs:detail' j.pk %}">Job #{{ j.pk }} &middot; {{ j.vehicle.plate_number }}</a>
+        <span class="badge {{ j.status_badge }}">{{ j.get_status_display }}</span>
+      </li>
+      {% empty %}<li class="list-group-item text-secondary">No jobs yet.</li>{% endfor %}
+    </ul></div></div>
+</div>
+{% endblock %}

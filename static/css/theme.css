@@ -1,0 +1,62 @@
+/* Brand theme: one place for the colours and type used by every page.
+   White pages, black text, blue accents (blue palette inspired by reatech360.com).
+   Change a value here and the whole app follows. */
+:root {
+  --brand: #0068b5;
+  --brand-600: #005a9c;
+  --brand-700: #004a82;
+  --navy: #0a1f3a;
+  --navy-2: #0f2d52;
+  --wash: #eaf3fb;
+  --paper: #f3f8fd; /* pale blue band for alternating sections */
+  --ink: #0a0a0a;   /* body text: black */
+  --muted: #5a6b7e;
+  --line: #dfe7f0;
+  --water: #38bdf8; /* highlight colour, used on dark backgrounds only */
+
+  --bs-primary: #0068b5;
+  --bs-primary-rgb: 0, 104, 181;
+  --bs-link-color: #0068b5;
+  --bs-link-color-rgb: 0, 104, 181;
+  --bs-link-hover-color: #004a82;
+  --bs-link-hover-color-rgb: 0, 74, 130;
+  --bs-body-color: #0a0a0a;
+  --bs-body-color-rgb: 10, 10, 10;
+  --bs-tertiary-bg: #ffffff;
+  --bs-tertiary-bg-rgb: 255, 255, 255;
+  --bs-border-color: #dfe7f0;
+  --bs-border-radius: .65rem;
+  --bs-focus-ring-color: rgb(0 104 181 / .25);
+  --bs-body-font-family: "Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+.btn-primary {
+  --bs-btn-bg: #0068b5; --bs-btn-border-color: #0068b5;
+  --bs-btn-hover-bg: #005a9c; --bs-btn-hover-border-color: #005a9c;
+  --bs-btn-active-bg: #004a82; --bs-btn-active-border-color: #004a82;
+  --bs-btn-disabled-bg: #0068b5; --bs-btn-disabled-border-color: #0068b5;
+  --bs-btn-focus-shadow-rgb: 0, 104, 181;
+}
+.btn-outline-primary {
+  --bs-btn-color: #0068b5; --bs-btn-border-color: #0068b5;
+  --bs-btn-hover-bg: #0068b5; --bs-btn-hover-border-color: #0068b5;
+  --bs-btn-active-bg: #005a9c; --bs-btn-active-border-color: #005a9c;
+  --bs-btn-focus-shadow-rgb: 0, 104, 181;
+}
+.form-control:focus, .form-select:focus { border-color: var(--brand); box-shadow: 0 0 0 .25rem rgb(0 104 181 / .2); }
+.form-check-input:checked { background-color: var(--brand); border-color: var(--brand); }
+
+.app-nav { background: #fff; border-bottom: 1px solid var(--line); --bs-navbar-color: #0a0a0a; --bs-navbar-hover-color: var(--brand); --bs-navbar-active-color: var(--brand);
+  --bs-navbar-brand-color: #0a0a0a; --bs-navbar-brand-hover-color: var(--brand); --bs-navbar-toggler-border-color: var(--line); }
+.app-nav .nav-link { font-weight: 500; }
+.app-nav .nav-link i, .app-nav .dropdown-item i { color: var(--brand); margin-right: .3rem; }
+.app-nav .navbar-brand i { color: var(--brand); }
+.app-nav .nav-link.active { color: var(--brand); font-weight: 600; }
+.text-secondary { color: var(--muted) !important; }
+.card { --bs-card-border-color: var(--line); --bs-card-cap-bg: var(--paper); box-shadow: 0 1px 2px rgb(10 40 80 / .05), 0 10px 26px -18px rgb(0 70 130 / .3); }
+.card-header { font-weight: 600; }
+h1, h2, h3, h4, h5, h6 { color: var(--ink); }
+a { text-underline-offset: .15em; }
+.text-info { color: var(--brand) !important; }
+.bg-info-subtle { background-color: var(--wash) !important; }
+.badge.bg-info { background-color: var(--wash) !important; color: var(--brand-700) !important; }

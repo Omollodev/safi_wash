@@ -1,0 +1,4 @@
+-r requirements.txt
+# Security tooling (also run in CI by .github/workflows/security.yml)
+bandit>=1.7
+pip-audit>=2.7

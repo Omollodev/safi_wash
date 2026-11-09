@@ -1,0 +1,15 @@
+{% extends "auth/base_auth.html" %}
+{% block title %}Resend verification | {{ BUSINESS.name }}{% endblock %}
+{% block auth_body %}
+<h1>Send the link again</h1>
+<p class="auth-lead">Enter the email you signed up with. If it matches an account waiting for verification, we send a new link.</p>
+<form method="post" data-busy-text="Sending...">
+  {% csrf_token %}
+  <div class="auth-field">
+    <label for="email">Email address</label>
+    <input class="form-control" id="email" name="email" type="email" required autocomplete="email" autofocus>
+  </div>
+  <button class="auth-btn" type="submit">Send verification email</button>
+</form>
+<div class="auth-alt"><p><a href="{% url 'accounts:login' %}">Back to log in</a></p></div>
+{% endblock %}

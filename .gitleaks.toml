@@ -1,0 +1,15 @@
+# Gitleaks configuration -- keeps every built-in secret rule switched on.
+# Docs: https://github.com/gitleaks/gitleaks
+title = "Safi Wash gitleaks config"
+
+[extend]
+useDefault = true
+
+# The ONLY things ignored: obviously fake passwords used by automated tests.
+# Do NOT add real files here. If gitleaks flags something real, rotate the secret instead.
+[[allowlists]]
+description = "Fake credentials in automated tests"
+paths = [
+  '''apps/[a-z_]+/tests/.*\.py''',
+  '''apps/core/testing\.py''',
+]
