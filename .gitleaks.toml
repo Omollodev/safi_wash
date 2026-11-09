@@ -7,7 +7,8 @@ useDefault = true
 
 # The ONLY things ignored: obviously fake passwords used by automated tests.
 # Do NOT add real files here. If gitleaks flags something real, rotate the secret instead.
-[[allowlists]]
+# [allowlist] (singular) is understood by every gitleaks version, old and new.
+[allowlist]
 description = "Fake credentials in automated tests"
 paths = [
   '''apps/[a-z_]+/tests/.*\.py''',
