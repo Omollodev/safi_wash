@@ -47,6 +47,6 @@ FROM runtime AS test
 USER 0:0
 COPY requirements-dev.txt .
 # pip was removed from the runtime image above; this test-only stage puts it back to install the tools.
-RUN python -m ensurepip \
- && pip install -r requirements-dev.txt
+RUN python -m ensurepip --default-pip \
+ && python -m pip install -r requirements-dev.txt
 USER 10001:10001
