@@ -24,6 +24,10 @@ RUN groupadd --system --gid 10001 app \
  && useradd  --system --uid 10001 --gid app --home-dir /app --no-create-home --shell /usr/sbin/nologin app
 COPY --from=builder /opt/venv /opt/venv
 ENV PATH="/opt/venv/bin:$PATH"
+# pip bundles its own copies of msgpack, urllib3 and setuptools. Trivy reports them (HIGH) and pip has no
+# fixed release yet. The running app never needs a package manager, so remove pip from the venv and the base image.
+RUN /opt/venv/bin/python -m pip uninstall -y pip \
+ && /usr/local/bin/python -m pip uninstall -y pip
 COPY . .
 # The key below exists only so collectstatic can start; it is NOT used at runtime.
 RUN DJANGO_SETTINGS_MODULE=config.settings.prod DJANGO_SECRET_KEY=build-time-placeholder \
@@ -42,5 +46,7 @@ CMD ["gunicorn", "config.wsgi:application", "-c", "gunicorn.conf.py"]
 FROM runtime AS test
 USER 0:0
 COPY requirements-dev.txt .
-RUN pip install -r requirements-dev.txt
+# pip was removed from the runtime image above; this test-only stage puts it back to install the tools.
+RUN python -m ensurepip \
+ && pip install -r requirements-dev.txt
 USER 10001:10001
