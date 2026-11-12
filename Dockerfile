@@ -31,16 +31,16 @@ RUN DJANGO_SETTINGS_MODULE=config.settings.prod DJANGO_SECRET_KEY=build-time-pla
  && mkdir -p /app/media \
  && chown app:app /app/media \
  && chmod +x /app/docker/entrypoint.sh
-USER app
+USER 10001:10001
 EXPOSE 8000
 HEALTHCHECK --interval=30s --timeout=5s --start-period=40s --retries=3 \
-  CMD python -c "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://127.0.0.1:8000/healthz/', timeout=4).status == 200 else 1)"
+  CMD ["python", "-c", "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://127.0.0.1:8000/healthz/', timeout=4).status == 200 else 1)"]
 ENTRYPOINT ["/app/docker/entrypoint.sh"]
 CMD ["gunicorn", "config.wsgi:application", "-c", "gunicorn.conf.py"]
 
 # ---------------------------------------------------------------- test: runtime + security tools (never deployed)
 FROM runtime AS test
-USER root
+USER 0:0
 COPY requirements-dev.txt .
 RUN pip install -r requirements-dev.txt
-USER app
+USER 10001:10001
