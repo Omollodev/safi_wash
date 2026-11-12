@@ -88,7 +88,7 @@ class LandingTests(TestCase):
         response = self.get()
         self.assertEqual(response.context["hero_photo"], newest)
         self.assertContains(response, 'fetchpriority="high"', count=1)
-        self.assertContains(response, 'loading="lazy"', count=3)  # gallery only, never the hero
+        self.assertContains(response, 'loading="lazy"', count=4)  # 3 gallery photos + the footer logo, never the hero
 
     def test_inactive_photo_not_shown(self):
         self.photo("hidden", is_active=False)

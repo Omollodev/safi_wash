@@ -8,7 +8,7 @@
 
 {% block content %}
 <aside class="auth__brand">
-  <a class="auth__logo" href="{% url 'dashboard:landing' %}"><i class="bi bi-droplet-half" aria-hidden="true"></i> {{ BUSINESS.name }}</a>
+  <a class="auth__logo" href="{% url 'dashboard:landing' %}"><img src="{% static 'img/logo.webp' %}" width="559" height="239" alt="{{ BUSINESS.name }} home"></a>
   <div class="auth__pitch">
     <h2>{% block brand_title %}Your car, tracked from drop-off to pickup.{% endblock %}</h2>
     <p>{% block brand_text %}Follow every service as it is ticked off, and pay from your phone when it shines.{% endblock %}</p>

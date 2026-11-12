@@ -51,6 +51,8 @@
 .app-nav .nav-link { font-weight: 500; }
 .app-nav .nav-link i, .app-nav .dropdown-item i { color: var(--brand); margin-right: .3rem; }
 .app-nav .navbar-brand i { color: var(--brand); }
+.brand-mark { width: 2.25rem; height: 2.25rem; border-radius: .6rem; display: block; }
+.foot-logo { height: 3rem; width: auto; margin-bottom: .6rem; }
 .app-nav .nav-link.active { color: var(--brand); font-weight: 600; }
 .text-secondary { color: var(--muted) !important; }
 .card { --bs-card-border-color: var(--line); --bs-card-cap-bg: var(--paper); box-shadow: 0 1px 2px rgb(10 40 80 / .05), 0 10px 26px -18px rgb(0 70 130 / .3); }

@@ -8,9 +8,8 @@
     radial-gradient(40rem 26rem at -10% 110%, rgb(0 104 181 / .16), transparent 62%),
     radial-gradient(24rem 24rem at 105% -10%, rgb(0 104 181 / .1), transparent 60%),
     var(--paper); }
-.auth__logo { color: var(--ink); text-decoration: none; font-weight: 800; font-size: 1.25rem; letter-spacing: -.01em; display: inline-flex; gap: .5rem; align-items: center; }
-.auth__logo i { color: var(--brand); }
-.auth__logo:hover { color: var(--brand); }
+.auth__logo { display: inline-flex; align-self: flex-start; border-radius: .5rem; }
+.auth__logo img { height: 3.25rem; width: auto; display: block; }
 .auth__pitch, .auth__fine { display: none; }
 .auth__pitch h2 { font-size: clamp(1.8rem, 2.6vw, 2.5rem); font-weight: 800; line-height: 1.12; letter-spacing: -.025em; margin: 0 0 .9rem; text-wrap: balance; max-width: 18ch; color: var(--ink); }
 .auth__pitch > p { color: #2b3440; max-width: 38ch; margin: 0 0 2rem; }
@@ -88,6 +87,7 @@
 @media (min-width: 960px) {
   .auth { grid-template-columns: minmax(22rem, 5fr) minmax(0, 6fr); }
   .auth__brand { padding: 2rem 2.5rem; justify-content: space-between; border-bottom: 0; border-right: 1px solid var(--line); }
+  .auth__logo img { height: 5rem; }
   .auth__pitch, .auth__fine { display: block; }
   .auth__panel { padding: 3rem 2rem 2rem; }
 }

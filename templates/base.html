@@ -11,12 +11,18 @@
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link href="{% static 'css/theme.css' %}" rel="stylesheet">
   <link href="{% static 'css/app.css' %}" rel="stylesheet">
+  <link rel="icon" type="image/png" sizes="32x32" href="{% static 'img/favicon-32.png' %}">
+  <link rel="icon" type="image/png" sizes="48x48" href="{% static 'img/favicon-48.png' %}">
+  <link rel="shortcut icon" href="{% static 'img/favicon.ico' %}">
+  <link rel="apple-touch-icon" sizes="180x180" href="{% static 'img/apple-touch-icon.png' %}">
+  <link rel="manifest" href="{% static 'manifest.webmanifest' %}">
+  <meta name="theme-color" content="#0068b5">
   {% block head %}{% endblock %}
 </head>
 <body>
 {% block nav %}<nav class="navbar navbar-expand-lg app-nav sticky-top">
   <div class="container-fluid">
-    <a class="navbar-brand fw-semibold" href="{% url 'dashboard:landing' %}"><i class="bi bi-droplet-half"></i> {{ BUSINESS.name }}</a>
+    <a class="navbar-brand fw-semibold d-flex align-items-center gap-2" href="{% url 'dashboard:landing' %}"><img class="brand-mark" src="{% static 'img/icon.webp' %}" width="36" height="36" alt=""> {{ BUSINESS.name }}</a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
     <div class="collapse navbar-collapse" id="nav">
       <ul class="navbar-nav me-auto">
@@ -72,6 +78,7 @@
 </main>
 
 {% block footer %}<footer class="text-center text-secondary small py-4">
+  <img class="foot-logo" src="{% static 'img/logo.webp' %}" width="559" height="239" alt="{{ BUSINESS.name }}: make it shine" loading="lazy"><br>
   {{ BUSINESS.name }} &middot; {{ BUSINESS.phone }} &middot; Open-source community project &mdash; a star on GitHub helps other students find it &#11088;
 </footer>{% endblock %}
 
