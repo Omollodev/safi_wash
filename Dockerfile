@@ -25,7 +25,8 @@ RUN groupadd --system --gid 10001 app \
 COPY --from=builder /opt/venv /opt/venv
 ENV PATH="/opt/venv/bin:$PATH"
 
-RUN /opt/venv/bin/python -m pip uninstall -y pip
+RUN /opt/venv/bin/python -m pip uninstall -y pip \
+ && /usr/local/bin/python -m pip uninstall -y pip
 COPY . .
 
 RUN DJANGO_SETTINGS_MODULE=config.settings.prod DJANGO_SECRET_KEY=build-time-placeholder \
