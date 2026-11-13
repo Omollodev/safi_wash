@@ -6,7 +6,7 @@ _SALT = "accounts.email-verification"
 
 
 def make_verification_token(user) -> str:
-    return signing.dumps({"uid": user.pk, "email": user.email}, salt=_SALT)
+    return signing.dumps({"uid": user.pk}, salt=_SALT)
 
 
 def read_verification_token(token: str):

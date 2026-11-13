@@ -1,6 +1,5 @@
 name: Security
 
-# DevSecOps pipeline: secrets, code, dependencies, container image, infrastructure files.
 on:
   push:
     branches: [main]
@@ -31,8 +30,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITLEAKS_CONFIG: .gitleaks.toml
-          GITLEAKS_VERSION: 8.30.1   # same version as `make gitleaks`; the action's default (8.24.3) ignores [[allowlists]]
-          # Only needed if this repo is owned by an *organization* (free key at gitleaks.io):
+          GITLEAKS_VERSION: 8.30.1   
           GITLEAKS_LICENSE: ${{ secrets.GITLEAKS_LICENSE }}
 
   sast-sca:

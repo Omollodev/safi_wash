@@ -72,12 +72,17 @@ class DarajaGateway:
         callback = settings.MPESA_CALLBACK_BASE_URL.rstrip("/") + reverse(
             "payments:mpesa_callback", args=[settings.MPESA_CALLBACK_TOKEN]
         )
+        # Daraja only accepts whole shillings - validate no decimal places
+        if amount != int(amount):
+            raise GatewayError("M-Pesa only accepts whole shilling amounts (no cents).")
+        amount_int = int(amount)
+
         body = {
             "BusinessShortCode": settings.MPESA_SHORTCODE,
             "Password": password,
             "Timestamp": timestamp,
             "TransactionType": "CustomerPayBillOnline",
-            "Amount": int(amount),  # Daraja only accepts whole shillings
+            "Amount": amount_int,
             "PartyA": phone,
             "PartyB": settings.MPESA_SHORTCODE,
             "PhoneNumber": phone,

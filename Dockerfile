@@ -24,12 +24,10 @@ RUN groupadd --system --gid 10001 app \
  && useradd  --system --uid 10001 --gid app --home-dir /app --no-create-home --shell /usr/sbin/nologin app
 COPY --from=builder /opt/venv /opt/venv
 ENV PATH="/opt/venv/bin:$PATH"
-# pip bundles its own copies of msgpack, urllib3 and setuptools. Trivy reports them (HIGH) and pip has no
-# fixed release yet. The running app never needs a package manager, so remove pip from the venv and the base image.
-RUN /opt/venv/bin/python -m pip uninstall -y pip \
- && /usr/local/bin/python -m pip uninstall -y pip
+
+RUN /opt/venv/bin/python -m pip uninstall -y pip
 COPY . .
-# The key below exists only so collectstatic can start; it is NOT used at runtime.
+
 RUN DJANGO_SETTINGS_MODULE=config.settings.prod DJANGO_SECRET_KEY=build-time-placeholder \
     python manage.py collectstatic --noinput \
  && mkdir -p /app/media \
@@ -38,7 +36,7 @@ RUN DJANGO_SETTINGS_MODULE=config.settings.prod DJANGO_SECRET_KEY=build-time-pla
 USER 10001:10001
 EXPOSE 8000
 HEALTHCHECK --interval=30s --timeout=5s --start-period=40s --retries=3 \
-  CMD ["python", "-c", "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://127.0.0.1:8000/healthz/', timeout=4).status == 200 else 1)"]
+  CMD ["python", "-c", "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://127.0.0.1:8000/health/', timeout=4).status == 200 else 1)"]
 ENTRYPOINT ["/app/docker/entrypoint.sh"]
 CMD ["gunicorn", "config.wsgi:application", "-c", "gunicorn.conf.py"]
 

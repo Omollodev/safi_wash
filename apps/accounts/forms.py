@@ -10,7 +10,6 @@ User = get_user_model()
 class LoginForm(BootstrapFormMixin, AuthenticationForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # Lets browsers and password managers fill the form correctly.
         self.fields["username"].widget.attrs.update(autocomplete="username", autocapitalize="none", spellcheck="false")
         self.fields["password"].widget.attrs.update(autocomplete="current-password")
 

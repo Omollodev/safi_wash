@@ -1,10 +1,4 @@
 # PRODUCTION-style stack: PostgreSQL + gunicorn, hardened containers.
-#
-#   cp .env.example .env     # then fill in real values (at least DJANGO_SECRET_KEY, POSTGRES_PASSWORD)
-#   docker compose up -d --build
-#
-# Put an HTTPS reverse proxy / platform load balancer in front (it must send X-Forwarded-Proto).
-# To try it on http://localhost only, set SECURE_SSL_REDIRECT=False in .env.
 name: carwash-pro
 
 services:

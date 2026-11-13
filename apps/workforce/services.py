@@ -34,5 +34,7 @@ def pick_best_available_worker(service=None):
 
     workers = available_workers()
     if service is not None:
-        workers = workers.filter(skills=service) or workers
+        skilled_workers = workers.filter(skills=service)
+        if skilled_workers.exists():
+            workers = skilled_workers
     return sorted(workers, key=lambda w: (-w.rating, jobs_completed_today(w)))[0] if workers else None

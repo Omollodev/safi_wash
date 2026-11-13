@@ -24,6 +24,8 @@ def role_required(*roles):
         def wrapper(request, *args, **kwargs):
             if not request.user.is_authenticated:
                 return redirect_to_login(request.get_full_path())
+            if not request.user.is_active:
+                raise PermissionDenied
             if request.user.role not in roles:
                 raise PermissionDenied
             return view(request, *args, **kwargs)

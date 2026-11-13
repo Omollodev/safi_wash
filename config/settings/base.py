@@ -1,10 +1,3 @@
-"""
-Settings shared by every environment.
-
-Environment-specific tweaks live in dev.py and prod.py.
-All secrets come from environment variables (see .env.example) -- never
-write a real password, key or token in this file.
-"""
 from pathlib import Path
 
 import dj_database_url
@@ -15,9 +8,7 @@ import os
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 load_dotenv(BASE_DIR / ".env")
 
-
 def env(name, default=None, required=False):
-    # A blank value (e.g. "DATABASE_URL=" copied from .env.example) counts as "not set".
     value = os.environ.get(name) or default
     if required and not value:
         raise ImproperlyConfigured(f"Set the {name} environment variable (see .env.example).")
@@ -45,7 +36,6 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "whitenoise.runserver_nostatic",
     "django.contrib.staticfiles",
-    # Our apps -- each one owns one part of the business (see ARCHITECTURE.md)
     "apps.core",
     "apps.accounts",
     "apps.customers",

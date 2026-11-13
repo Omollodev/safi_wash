@@ -5,7 +5,7 @@ from django.urls import include, path, re_path
 from django.views.static import serve
 
 
-def healthz(request):
+def health(request):
     """Used by Docker/hosting health checks. Reveals nothing, touches nothing."""
     return HttpResponse("ok", content_type="text/plain")
 
@@ -16,7 +16,7 @@ def gallery_media(request, path):
 
 
 urlpatterns = [
-    path("healthz/", healthz, name="healthz"),
+    path("health/", health, name="health"),
     path("admin/", admin.site.urls),
     path("", include("apps.dashboard.urls")),
     path("accounts/", include("apps.accounts.urls")),

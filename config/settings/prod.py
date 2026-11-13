@@ -11,7 +11,7 @@ _HTTPS = env_bool("SECURE_SSL_REDIRECT", True)
 
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 SECURE_SSL_REDIRECT = _HTTPS
-SECURE_REDIRECT_EXEMPT = [r"^healthz/$"]  # container health checks talk plain HTTP
+SECURE_REDIRECT_EXEMPT = [r"^health/$"]  # container health checks talk plain HTTP
 SESSION_COOKIE_SECURE = _HTTPS
 CSRF_COOKIE_SECURE = _HTTPS
 SECURE_HSTS_SECONDS = 60 * 60 * 24 * 30 if _HTTPS else 0

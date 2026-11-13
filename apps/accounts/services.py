@@ -29,7 +29,7 @@ def verify_email(token: str):
     payload = read_verification_token(token)
     if not payload:
         return None
-    user = User.objects.filter(pk=payload["uid"], email=payload["email"]).first()
+    user = User.objects.filter(pk=payload["uid"]).first()
     if user is None:
         return None
     if not user.is_active:

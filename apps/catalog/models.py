@@ -16,8 +16,7 @@ class Service(TimeStampedModel):
         DETAILING = "detailing", "Detailing"
         ADDITIONAL = "additional", "Additional services"
 
-    # Basic categories are part of the normal wash; "extra" ones can trigger an
-    # alert on a job because the customer must approve them.
+  
     BASIC_CATEGORIES = (Category.EXTERIOR, Category.INTERIOR)
     EXTRA_CATEGORIES = (Category.DETAILING, Category.ADDITIONAL)
 

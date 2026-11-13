@@ -8,6 +8,7 @@ Rule of thumb used across this project:
   * views.py    -> glue between HTTP and the three above
 """
 from decimal import Decimal
+from types import MappingProxyType
 
 from django.conf import settings
 from django.db import models
@@ -31,13 +32,15 @@ class Job(TimeStampedModel):
         URGENT = "urgent", "Urgent"
 
     # The whole workflow in one dictionary: from-status -> statuses it may move to.
-    ALLOWED_TRANSITIONS = {
-        "waiting": ["in_progress", "cancelled"],
-        "in_progress": ["awaiting_extra", "completed", "cancelled"],
-        "awaiting_extra": ["in_progress", "completed"],
-        "completed": [],
-        "cancelled": [],
+    # Wrapped in MappingProxyType to prevent accidental runtime mutation.
+    _ALLOWED_TRANSITIONS = {
+        "waiting": ("in_progress", "cancelled"),
+        "in_progress": ("awaiting_extra", "completed", "cancelled"),
+        "awaiting_extra": ("in_progress", "completed"),
+        "completed": (),
+        "cancelled": (),
     }
+    ALLOWED_TRANSITIONS = MappingProxyType(_ALLOWED_TRANSITIONS)
     BADGES = {
         "waiting": "bg-secondary",
         "in_progress": "bg-primary",
@@ -123,7 +126,8 @@ class Job(TimeStampedModel):
     @property
     def payment_status(self) -> str:
         paid = self.amount_paid
-        if paid <= 0 and self.payments.filter(amount__lt=0).exists():
+        # Check for any refund (negative payment) regardless of net amount
+        if self.payments.filter(amount__lt=0).exists():
             return "refunded"
         if paid >= self.total_price and (paid > 0 or self.total_price == 0):
             return "paid"

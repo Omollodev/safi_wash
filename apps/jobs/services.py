@@ -82,14 +82,18 @@ def change_status(job: Job, new_status: str, user=None, notes: str = "") -> Job:
     old_status = job.status
     job.status = new_status
     now = timezone.now()
+    update_fields = ["status", "need_alert", "updated_at"]
     if new_status == Job.Status.IN_PROGRESS and not job.started_at:
         job.started_at = now
+        update_fields.append("started_at")
     if new_status == Job.Status.COMPLETED:
         job.completed_at = now
+        update_fields.append("completed_at")
         if job.started_at:
             job.actual_duration = int((now - job.started_at).total_seconds() // 60)
+            update_fields.append("actual_duration")
     job.need_alert = job.has_pending_extra_services()
-    job.save()
+    job.save(update_fields=update_fields)
 
     log_event(job, "status_change", f"Status changed from {old_status} to {new_status}", user, notes)
 
@@ -125,8 +129,9 @@ def add_service(job: Job, service, user=None, notes: str = "", price=None) -> Jo
     line = JobService.objects.create(
         job=job, service=service, notes=notes, price=service.price if price is None else price
     )
-    # Adding work while the job is running pauses it until the extra is approved/done.
-    if job.status == Job.Status.IN_PROGRESS:
+    # Adding work while the job is running pauses it only for extra services
+    # (detailing/additional) that require customer approval.
+    if job.status == Job.Status.IN_PROGRESS and service.is_extra:
         job.status = Job.Status.AWAITING_EXTRA
         job.save(update_fields=["status", "updated_at"])
     recalculate_totals(job)
