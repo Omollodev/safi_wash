@@ -4,7 +4,6 @@ from django.db import models
 from django.db.models import Sum
 
 from apps.core.models import TimeStampedModel
-from apps.jobs.models import Job
 
 
 class Customer(TimeStampedModel):
@@ -37,11 +36,11 @@ class Customer(TimeStampedModel):
     # Loyalty numbers are *calculated* from jobs, never stored, so they cannot go out of sync.
     @property
     def total_visits(self):
-        return self.jobs.filter(status=Job.Status.COMPLETED).count()
+        return self.jobs.filter(status="completed").count()
 
     @property
     def total_spent(self):
-        return self.jobs.filter(status=Job.Status.COMPLETED).aggregate(t=Sum("total_price"))["t"] or 0
+        return self.jobs.filter(status="completed").aggregate(t=Sum("total_price"))["t"] or 0
 
 
 class Vehicle(TimeStampedModel):
@@ -80,7 +79,6 @@ class Vehicle(TimeStampedModel):
         super().clean()
 
     def save(self, *args, **kwargs):
-        self.full_clean()
         super().save(*args, **kwargs)
 
     @property

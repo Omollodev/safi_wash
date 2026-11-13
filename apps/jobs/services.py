@@ -7,7 +7,7 @@ Rule violations raise JobError with a human-readable message.
 """
 from decimal import Decimal
 
-from django.db import transaction
+from django.db import IntegrityError, transaction
 from django.db.models import Max
 from django.utils import timezone
 
@@ -53,12 +53,20 @@ def create_job(*, customer, vehicle, services, created_by=None, priority=Job.Pri
         raise JobError("Choose at least one service.")
 
     today = timezone.localdate()
-    last = Job.objects.filter(queue_date=today).aggregate(m=Max("queue_number"))["m"] or 0
-    job = Job.objects.create(
-        customer=customer, vehicle=vehicle, created_by=created_by, priority=priority,
-        special_instructions=special_instructions, discount=discount,
-        assigned_worker=assigned_worker, queue_date=today, queue_number=last + 1,
-    )
+    # Retry on race condition: two requests might get the same max queue_number
+    for _ in range(3):
+        last = Job.objects.filter(queue_date=today).aggregate(m=Max("queue_number"))["m"] or 0
+        try:
+            job = Job.objects.create(
+                customer=customer, vehicle=vehicle, created_by=created_by, priority=priority,
+                special_instructions=special_instructions, discount=discount,
+                assigned_worker=assigned_worker, queue_date=today, queue_number=last + 1,
+            )
+            break  # success
+        except IntegrityError:
+            continue  # retry with fresh max
+    else:
+        raise JobError("Could not assign queue number after retries. Please try again.")
     for service in services:
         JobService.objects.create(job=job, service=service, price=service.price)
     recalculate_totals(job)

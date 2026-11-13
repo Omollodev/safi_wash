@@ -23,7 +23,7 @@ def mark_read(request, pk):
     notification = get_object_or_404(Notification, pk=pk, recipient=request.user)
     notification.mark_read()
     if notification.job_id:
-        return redirect("jobs:detail", pk=notification.job_id)
+        return redirect(_job_url(request.user, notification.job_id))
     return redirect("notifications:list")
 
 

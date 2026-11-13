@@ -15,7 +15,7 @@ class Payment(models.Model):
     job = models.ForeignKey("jobs.Job", on_delete=models.PROTECT, related_name="payments")
     amount = models.DecimalField(max_digits=10, decimal_places=2, help_text="Negative = refund")
     method = models.CharField(max_length=10, choices=Method.choices)
-    reference = models.CharField(max_length=64, blank=True, help_text="M-Pesa receipt number")
+    reference = models.CharField(max_length=64, blank=True, null=True, help_text="M-Pesa receipt number")
     phone = models.CharField(max_length=20, blank=True)
     notes = models.CharField(max_length=255, blank=True)
     recorded_by = models.ForeignKey(
@@ -27,10 +27,15 @@ class Payment(models.Model):
         ordering = ["-created_at"]
         constraints = [
             # An M-Pesa receipt can only ever be counted once (blocks replayed callbacks).
-            models.UniqueConstraint(
-                fields=["reference"], condition=~models.Q(reference=""), name="unique_payment_reference"
-            )
+            # Use nullable field with unique=True; MySQL allows multiple NULLs.
+            models.UniqueConstraint(fields=["reference"], name="unique_payment_reference")
         ]
+
+    def save(self, *args, **kwargs):
+        # Convert empty string to None for unique constraint compatibility (MySQL allows multiple NULLs)
+        if self.reference == "":
+            self.reference = None
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.get_method_display()} {self.amount} on job #{self.job_id}"

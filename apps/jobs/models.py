@@ -99,6 +99,10 @@ class Job(TimeStampedModel):
     def is_open(self):
         return self.status not in (self.Status.COMPLETED, self.Status.CANCELLED)
 
+    @property
+    def can_cancel(self):
+        return self.can_transition_to(self.Status.CANCELLED)
+
     def can_transition_to(self, new_status: str) -> bool:
         return new_status in self.ALLOWED_TRANSITIONS.get(self.status, [])
 
@@ -126,8 +130,9 @@ class Job(TimeStampedModel):
     @property
     def payment_status(self) -> str:
         paid = self.amount_paid
-        # Check for any refund (negative payment) regardless of net amount
-        if self.payments.filter(amount__lt=0).exists():
+        has_refund = self.payments.filter(amount__lt=0).exists()
+        # Refunded only when net paid <= 0 AND there was a refund
+        if has_refund and paid <= 0:
             return "refunded"
         if paid >= self.total_price and (paid > 0 or self.total_price == 0):
             return "paid"

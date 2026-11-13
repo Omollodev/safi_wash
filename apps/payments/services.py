@@ -113,6 +113,16 @@ def handle_mpesa_result(checkout_request_id: str, result_code: int, result_desc:
         req.save()
         logger.error("M-Pesa amount mismatch on %s", checkout_request_id)
         return req
+
+    # Re-check balance under row lock to prevent overpayment via duplicate callbacks
+    job = Job.objects.select_for_update().get(pk=req.job_id)
+    if req.amount > job.balance_due:
+        req.status = MpesaRequest.Status.FAILED
+        req.result_desc = f"Amount exceeds balance due ({job.balance_due}) - flagged for manual review"
+        req.save()
+        logger.error("M-Pesa amount exceeds balance due on %s", checkout_request_id)
+        return req
+
     try:
         with transaction.atomic():
             payment = Payment.objects.create(

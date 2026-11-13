@@ -102,7 +102,7 @@
           <button class="btn btn-primary w-100">&rarr; {{ label }}</button></form>
         {% endif %}
       {% endfor %}
-      {% if user.is_staff_role %}
+      {% if user.is_staff_role and job.can_cancel %}
       <form method="post" action="{% url 'jobs:cancel' job.pk %}" onsubmit="return confirm('Cancel this job?')">{% csrf_token %}
         <input class="form-control form-control-sm mb-2" name="reason" placeholder="Reason for cancelling">
         <button class="btn btn-outline-danger w-100">{% icon "x" %}Cancel job</button></form>

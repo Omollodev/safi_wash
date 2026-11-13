@@ -18,6 +18,7 @@ class Service(TimeStampedModel):
 
   
     BASIC_CATEGORIES = (Category.EXTERIOR, Category.INTERIOR)
+    BASIC_CATEGORIES = (Category.EXTERIOR, Category.INTERIOR)
     EXTRA_CATEGORIES = (Category.DETAILING, Category.ADDITIONAL)
 
     name = models.CharField(max_length=120, unique=True)

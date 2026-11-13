@@ -23,7 +23,7 @@ class User(AbstractUser):
 
     @property
     def is_staff_role(self):
-        return self.role in (self.Role.ADMIN, self.Role.MANAGER)
+        return self.is_superuser or self.role in (self.Role.ADMIN, self.Role.MANAGER)
 
     @property
     def is_worker(self):
@@ -35,6 +35,9 @@ class User(AbstractUser):
 
     def save(self, *args, **kwargs):
         # Admin role == Django superuser/staff, so the /admin/ site works for them.
-        if self.role == self.Role.ADMIN:
+        # Sync is_staff with role: True for admin/manager, False otherwise (unless superuser).
+        if self.role == self.Role.ADMIN or self.is_superuser:
             self.is_staff = True
+        else:
+            self.is_staff = False
         super().save(*args, **kwargs)
