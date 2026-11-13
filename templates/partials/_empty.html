@@ -1,0 +1,7 @@
+{# Empty state: {% include "partials/_empty.html" with icon="inbox" title="..." text="..." url=... label="..." %} #}
+<div class="empty-state">
+  <span class="empty-state__icon">{% icon icon|default:"inbox" "icon-lg m-0" %}</span>
+  <p class="empty-state__title">{{ title }}</p>
+  {% if text %}<p class="empty-state__text">{{ text }}</p>{% endif %}
+  {% if url %}<a class="btn btn-sm btn-outline-primary" href="{{ url }}">{{ label }}</a>{% endif %}
+</div>

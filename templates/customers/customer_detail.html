@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% load money %}
+{% block title %}{{ customer.name }}{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-start mb-3">
+  <div>
+    <h1 class="h3 mb-0">{{ customer.name }} {% if customer.is_vip %}<span class="badge bg-warning text-dark">VIP</span>{% endif %}</h1>
+    <div class="text-secondary">{{ customer.phone }}{% if customer.email %} &middot; {{ customer.email }}{% endif %}</div>
+  </div>
+  <a class="btn btn-outline-primary" href="{% url 'customers:edit' customer.pk %}">{% icon "square-pen" %}Edit</a>
+</div>
+<div class="row g-3">
+  <div class="col-lg-4">
+    <div class="card shadow-sm mb-3"><div class="card-body">
+      <div class="row text-center">
+        <div class="col"><div class="display-6">{{ customer.total_visits }}</div><div class="small text-secondary">Visits</div></div>
+        <div class="col"><div class="h4 mt-2">{{ customer.total_spent|money }}</div><div class="small text-secondary">Total spent</div></div>
+      </div>
+      {% if customer.address %}<hr><div class="small"><strong>Address:</strong> {{ customer.address }}</div>{% endif %}
+      {% if customer.service_preferences %}<div class="small mt-2"><strong>Preferences:</strong> {{ customer.service_preferences }}</div>{% endif %}
+      {% if customer.notes %}<div class="small mt-2"><strong>Notes:</strong> {{ customer.notes }}</div>{% endif %}
+    </div></div>
+  </div>
+  <div class="col-lg-8">
+    <div class="card shadow-sm mb-3">
+      <div class="card-header d-flex justify-content-between"><span>Vehicles</span>
+        <a class="btn btn-sm btn-primary" href="{% url 'customers:vehicle_create' customer.pk %}">{% icon "plus" %}Add vehicle</a></div>
+      <ul class="list-group list-group-flush">
+        {% for v in vehicles %}
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+          <div><a href="{% url 'customers:vehicle_detail' v.pk %}"><strong>{{ v.plate_number }}</strong></a> &middot; {{ v.description }}</div>
+          <div>
+            <a class="btn btn-sm btn-outline-secondary" href="{% url 'customers:vehicle_edit' v.pk %}">{% icon "square-pen" %}Edit</a>
+            <a class="btn btn-sm btn-success" href="{% url 'jobs:create' %}?vehicle={{ v.pk }}">{% icon "clipboard-plus" %}New job</a>
+          </div>
+        </li>
+        {% empty %}<li class="list-group-item text-secondary">No vehicles yet.</li>{% endfor %}
+      </ul>
+    </div>
+    <div class="card shadow-sm"><div class="card-header">Recent jobs</div>
+      <ul class="list-group list-group-flush">
+        {% for j in jobs %}
+        <li class="list-group-item d-flex justify-content-between">
+          <a href="{% url 'jobs:detail' j.pk %}">Job #{{ j.pk }} &middot; {{ j.vehicle.plate_number }}</a>
+          <span><span class="badge {{ j.status_badge }}">{{ j.get_status_display }}</span> {{ j.total_price|money }}</span>
+        </li>
+        {% empty %}<li class="list-group-item text-secondary">No jobs yet.</li>{% endfor %}
+      </ul>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,189 @@
+{% extends "base.html" %}
+{% load static money %}
+{% block title %}{{ BUSINESS.name }} | Car wash &amp; detailing{% endblock %}
+
+{% block head %}
+  <meta name="description" content="{{ BUSINESS.name }}: car wash, interior cleaning and detailing. Clear prices, live job tracking and M-Pesa payments. {{ BUSINESS.address }}.">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="{{ BUSINESS.name }} | Car wash &amp; detailing">
+  <meta property="og:description" content="Book online, track your car live, pay with M-Pesa.">
+  <meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{% if hero_photo %}{{ hero_photo.image.url }}{% else %}{% static 'img/hero.webp' %}{% endif %}">
+  <script>document.documentElement.classList.add("js");</script>
+  <link href="{% static 'css/landing.css' %}" rel="stylesheet">
+  <script type="application/ld+json">{{ jsonld|safe }}</script>
+{% endblock %}
+
+{% block main_class %}landing p-0{% endblock %}
+
+{% block content %}
+<!-- ============================================================ HERO -->
+<section class="lp-hero" aria-labelledby="hero-title">
+  <div class="lp-wrap lp-hero__grid">
+    <div class="lp-hero__copy">
+      <h1 id="hero-title">A spotless car,<br><span class="lp-blue">tracked live from drop-off to pickup.</span></h1>
+      <p class="lp-lead">Professional washing, interior cleaning and detailing at clear prices. Book online, watch your job move through the queue, and pay with M-Pesa when it shines.</p>
+      <div class="lp-actions">
+        <a class="lp-btn lp-btn--primary" href="{% url 'portal:signup' %}">{% icon "calendar-plus" %}Book a wash</a>
+        <a class="lp-btn lp-btn--outline" href="tel:{{ BUSINESS.phone|tel }}">{% icon "phone" %}{{ BUSINESS.phone }}</a>
+      </div>
+    </div>
+    <div class="lp-hero__media">
+      <!-- LCP image: high priority, never lazy, explicit size to avoid layout shift. -->
+      {% if hero_photo %}
+        <img src="{{ hero_photo.image.url }}" alt="{{ hero_photo.alt }}" width="800" height="600" fetchpriority="high" decoding="async">
+      {% else %}
+        <img src="{% static 'img/hero-800.webp' %}" srcset="{% static 'img/hero-800.webp' %} 800w, {% static 'img/hero.webp' %} 1395w" sizes="(min-width: 900px) 540px, 100vw"
+             alt="A detailer steam-cleans the dashboard and steering wheel of a red car" width="1395" height="931" fetchpriority="high" decoding="async">
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+<!-- Floating facts bar (facts about the business, not invented numbers) -->
+<div class="lp-wrap lp-facts-wrap">
+  <ul class="lp-facts" aria-label="At a glance">
+    <li>{% icon "clock" %}<div><strong>{{ BUSINESS.hours }}</strong><span>Opening hours</span></div></li>
+    <li>{% icon "smartphone" %}<div><strong>M-Pesa and cash</strong><span>Pay the way you prefer</span></div></li>
+    <li>{% icon "radio" %}<div><strong>Live tracking</strong><span>Every service ticked off</span></div></li>
+    {% if service_count %}<li>{% icon "tag" %}<div><strong>{{ service_count }} service{{ service_count|pluralize }}</strong><span>Priced up front</span></div></li>{% endif %}
+  </ul>
+</div>
+
+<!-- ============================================================ SERVICES & PRICING -->
+<section class="lp-section lp-section--light" id="services" aria-labelledby="services-title">
+  <div class="lp-wrap">
+    <header class="lp-head reveal">
+      <p class="lp-eyebrow">Services and pricing</p>
+      <h2 id="services-title">Pick what your car needs</h2>
+      <p>{{ service_count }} service{{ service_count|pluralize }}, priced up front. No surprises at the till.</p>
+    </header>
+
+    {% if categories %}
+    <div class="lp-tabs" data-tabs>
+      <div class="lp-tablist" role="tablist" aria-label="Service categories">
+        {% for cat in categories %}
+          <button class="lp-tab" role="tab" id="tab-{{ cat.key }}" aria-controls="panel-{{ cat.key }}"
+                  aria-selected="{% if forloop.first %}true{% else %}false{% endif %}" {% if not forloop.first %}tabindex="-1"{% endif %} type="button">
+            {% icon cat.icon %}{{ cat.label }} <span class="lp-tab__count">{{ cat.services|length }}</span>
+          </button>
+        {% endfor %}
+      </div>
+
+      {% for cat in categories %}
+      <div class="lp-tabpanel" role="tabpanel" id="panel-{{ cat.key }}" aria-labelledby="tab-{{ cat.key }}" tabindex="0">
+        <h3 class="lp-panel-title">{{ cat.label }}</h3>
+        <ul class="lp-cards">
+          {% for s in cat.services %}
+          <li class="lp-card reveal">
+            <div class="lp-card__top">
+              {% icon cat.icon "lp-card__icon" %}
+              <h4>{{ s.name }}</h4>
+              <p class="lp-price">{{ s.price|money }}</p>
+            </div>
+            {% if s.description %}<p class="lp-card__text">{{ s.description }}</p>{% endif %}
+            <p class="lp-card__meta">{% icon "timer" %}about {{ s.estimated_duration|minutes }}{% if s.is_extra %} &middot; <span class="lp-tag">Add-on</span>{% endif %}</p>
+          </li>
+          {% endfor %}
+        </ul>
+      </div>
+      {% endfor %}
+    </div>
+    <p class="lp-center"><a class="lp-btn lp-btn--primary" href="{% url 'portal:signup' %}">Book your wash</a></p>
+    {% else %}
+      <p class="lp-center lp-muted">Our price list is coming soon.</p>
+    {% endif %}
+  </div>
+</section>
+
+<!-- ============================================================ HOW IT WORKS -->
+<section class="lp-section lp-section--tint" aria-labelledby="how-title">
+  <div class="lp-wrap">
+    <header class="lp-head reveal">
+      <p class="lp-eyebrow">How it works</p>
+      <h2 id="how-title">From booking to shine in four steps</h2>
+    </header>
+    <ol class="lp-steps">
+      <li class="reveal"><span class="lp-step__icon">{% icon "calendar-check" %}</span><h3>Book</h3><p>Create a free account, add your car and choose your services.</p></li>
+      <li class="reveal"><span class="lp-step__icon">{% icon "car-front" %}</span><h3>Drop off</h3><p>Get your queue number and an estimated time as soon as you book.</p></li>
+      <li class="reveal"><span class="lp-step__icon">{% icon "radio" %}</span><h3>Track live</h3><p>See each service ticked off. Any extras are shown and priced before we start them.</p></li>
+      <li class="reveal"><span class="lp-step__icon">{% icon "wallet" %}</span><h3>Pay &amp; go</h3><p>Pay with M-Pesa from your phone, or cash at the counter.</p></li>
+    </ol>
+  </div>
+</section>
+
+<!-- ============================================================ GALLERY -->
+{% if gallery %}
+<section class="lp-section lp-section--light" id="gallery" aria-labelledby="gallery-title">
+  <div class="lp-wrap">
+    <header class="lp-head lp-head--row reveal">
+      <div>
+        <p class="lp-eyebrow">Our work</p>
+        <h2 id="gallery-title">Results that speak for themselves</h2>
+      </div>
+      <div class="lp-arrows" aria-label="Scroll gallery">
+        <button type="button" class="lp-arrow" data-gallery-prev aria-label="Previous photos">{% icon "arrow-left" %}</button>
+        <button type="button" class="lp-arrow" data-gallery-next aria-label="Next photos">{% icon "arrow-right" %}</button>
+      </div>
+    </header>
+  </div>
+  <ul class="lp-strip" data-gallery tabindex="-1">
+    {% for photo in gallery %}
+    <li>
+      <button type="button" class="lp-photo" data-full="{{ photo.image.url }}" data-title="{{ photo.title }}" data-alt="{{ photo.alt }}" aria-haspopup="dialog">
+        <img src="{{ photo.image.url }}" alt="{{ photo.alt }}" width="480" height="360" loading="lazy" decoding="async">
+        <span class="lp-photo__cap">{{ photo.title }}</span>
+      </button>
+    </li>
+    {% endfor %}
+  </ul>
+</section>
+
+<dialog id="lightbox" class="lp-dialog" closedby="any" aria-labelledby="lb-title">
+  <form method="dialog"><button class="lp-dialog__close" aria-label="Close photo">{% icon "x" %}</button></form>
+  <img id="lb-img" alt="" width="1000" height="750">
+  <p id="lb-title"></p>
+</dialog>
+{% endif %}
+
+<!-- ============================================================ WHY US + STATS -->
+<section class="lp-section lp-section--tint" aria-labelledby="why-title">
+  <div class="lp-wrap">
+    <header class="lp-head reveal">
+      <p class="lp-eyebrow">Why drivers choose us</p>
+      <h2 id="why-title">Care you can see</h2>
+    </header>
+    <div class="lp-features">
+      <article class="reveal">{% icon "receipt" %}<h3>Total transparency</h3><p>Every price is listed before you book, and extras are never added without being recorded on your job.</p></article>
+      <article class="reveal">{% icon "bell" %}<h3>Alerts, not waiting</h3><p>Get notified the moment your car is ready, so you spend your time on something better.</p></article>
+      <article class="reveal">{% icon "wallet" %}<h3>Pay your way</h3><p>M-Pesa prompt to your phone or cash at the counter. A receipt trail for every payment.</p></article>
+    </div>
+    {% if stats %}
+    <dl class="lp-stats">
+      {% for stat in stats %}<div class="reveal"><dt>{{ stat.label }}</dt><dd>{{ stat.value }}</dd></div>{% endfor %}
+    </dl>
+    {% endif %}
+  </div>
+</section>
+
+<!-- ============================================================ CTA + CONTACT -->
+<section class="lp-section lp-section--cta" id="contact" aria-labelledby="contact-title">
+  <div class="lp-wrap lp-contact lp-panel">
+    <div class="reveal">
+      <h2 id="contact-title">Give your car the clean it deserves</h2>
+      <p>Book online in a minute, or just drive in.</p>
+      <div class="lp-actions">
+        <a class="lp-btn lp-btn--primary" href="{% url 'portal:signup' %}">{% icon "user-plus" %}Create account &amp; book</a>
+        <a class="lp-btn lp-btn--outline" href="https://wa.me/{{ BUSINESS.phone|wa_number }}" rel="noopener">{% icon "message-circle" %}WhatsApp us</a>
+      </div>
+    </div>
+    <address class="lp-address reveal">
+      <p>{% icon "map-pin" %}{{ BUSINESS.address }}</p>
+      <p>{% icon "phone" %}<a href="tel:{{ BUSINESS.phone|tel }}">{{ BUSINESS.phone }}</a></p>
+      <p>{% icon "mail" %}<a href="mailto:{{ BUSINESS.email }}">{{ BUSINESS.email }}</a></p>
+      <p>{% icon "clock" %}{{ BUSINESS.hours }}</p>
+    </address>
+  </div>
+</section>
+{% endblock %}
+
+{% block scripts %}<script src="{% static 'js/landing.js' %}" defer></script>{% endblock %}

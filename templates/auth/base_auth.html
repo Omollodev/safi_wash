@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% load static %}
+{% block nav %}{% endblock %}
+{% block footer %}{% endblock %}
+{% block messages %}{% endblock %}
+{% block head %}<link href="{% static 'css/auth.css' %}" rel="stylesheet">{% endblock %}
+{% block main_class %}auth{% endblock %}
+
+{% block content %}
+<aside class="auth__brand">
+  <a class="auth__logo" href="{% url 'dashboard:landing' %}"><img src="{% static 'img/logo.webp' %}" width="559" height="239" alt="{{ BUSINESS.name }} home"></a>
+  <div class="auth__pitch">
+    <h2>{% block brand_title %}Your car, tracked from drop-off to pickup.{% endblock %}</h2>
+    <p>{% block brand_text %}Follow every service as it is ticked off, and pay from your phone when it shines.{% endblock %}</p>
+    <div class="ticket" aria-hidden="true">
+      <div class="ticket__head">
+        <div><strong>KAA 123A</strong><span>Toyota Axio</span></div>
+        <span class="ticket__tag">Example job</span>
+      </div>
+      <ol class="ticket__steps">
+        <li class="is-done">{% icon "check" %}<span>Checked in</span><time>9:02</time></li>
+        <li class="is-done">{% icon "check" %}<span>Exterior wash</span><time>9:21</time></li>
+        <li class="is-now">{% icon "droplet" %}<span>Interior vacuum</span><time>In progress</time></li>
+        <li>{% icon "circle" %}<span>Ready for pickup</span><time></time></li>
+      </ol>
+      <div class="ticket__foot"><span>KES 900</span><span class="ticket__pay">{% icon "smartphone" %}Pay with M-Pesa</span></div>
+    </div>
+  </div>
+  <p class="auth__fine">{{ BUSINESS.address }}<br>{{ BUSINESS.hours }}</p>
+</aside>
+
+<section class="auth__panel">
+  <div class="auth__box {% block box_class %}{% endblock %}">
+    {% for message in messages %}
+      <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags|default:'info' }}{% endif %}" role="status">{{ message }}</div>
+    {% endfor %}
+    {% block auth_body %}{% endblock %}
+  </div>
+  <a class="auth__back" href="{% url 'dashboard:landing' %}">{% icon "arrow-left" %}Back to home page</a>
+</section>
+{% endblock %}
+
+{% block scripts %}<script src="{% static 'js/auth.js' %}" defer></script>{% endblock %}

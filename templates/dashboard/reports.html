@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% load money %}
+{% block title %}Reports{% endblock %}
+{% block content %}
+<h1 class="h3 mb-3">{% icon "chart-no-axes-combined" %}Reports</h1>
+<div class="row g-3 mb-4">
+  {% include "dashboard/_period_card.html" with label="Today" r=today %}
+  {% include "dashboard/_period_card.html" with label="Last 7 days" r=week %}
+  {% include "dashboard/_period_card.html" with label="Last 30 days" r=month %}
+</div>
+<div class="row g-3">
+  <div class="col-lg-4"><div class="card shadow-sm h-100"><div class="card-header">Top workers (30 days)</div>
+    <ul class="list-group list-group-flush">
+      {% for w in top_workers %}<li class="list-group-item d-flex justify-content-between">{{ w.name }}<span class="badge bg-primary">{{ w.done }} jobs</span></li>
+      {% empty %}<li class="list-group-item text-secondary">No completed jobs yet.</li>{% endfor %}
+    </ul></div></div>
+  <div class="col-lg-4"><div class="card shadow-sm h-100"><div class="card-header">Popular services (30 days)</div>
+    <ul class="list-group list-group-flush">
+      {% for s in services %}<li class="list-group-item d-flex justify-content-between">{{ s.service__name }}<span>{{ s.times }} &times; &middot; {{ s.revenue|money }}</span></li>
+      {% empty %}<li class="list-group-item text-secondary">No data yet.</li>{% endfor %}
+    </ul></div></div>
+  <div class="col-lg-4"><div class="card shadow-sm h-100"><div class="card-header">Payments by method (30 days)</div>
+    <ul class="list-group list-group-flush">
+      {% for m in methods %}<li class="list-group-item d-flex justify-content-between">{{ m.method|title }}<span>{{ m.total|money }} ({{ m.n }})</span></li>
+      {% empty %}<li class="list-group-item text-secondary">No payments yet.</li>{% endfor %}
+    </ul></div></div>
+</div>
+{% endblock %}

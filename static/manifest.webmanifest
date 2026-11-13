@@ -1,0 +1,14 @@
+{
+  "name": "Safi Wash",
+  "short_name": "Safi Wash",
+  "description": "Book a car wash, track your car live and pay with M-Pesa.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#0068b5",
+  "icons": [
+    { "src": "img/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "img/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "img/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

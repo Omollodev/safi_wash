@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% load money %}
+{% block title %}Workers{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h1 class="h3 mb-0">{% icon "contact" %}Workers</h1>
+  {% if user.role == 'admin' %}<a class="btn btn-primary" href="{% url 'accounts:user_create' %}">{% icon "user-plus" %}Add worker (create user)</a>{% endif %}
+</div>
+<div class="row g-3">
+  {% for w in workers %}
+  <div class="col-md-6 col-xl-4">
+    <div class="card shadow-sm h-100"><div class="card-body">
+      <div class="d-flex justify-content-between">
+        <h2 class="h5"><a href="{% url 'workforce:detail' w.pk %}">{{ w.name }}</a></h2>
+        {% if w.is_available %}<span class="badge bg-success align-self-start">Available</span>{% else %}<span class="badge bg-secondary align-self-start">Unavailable</span>{% endif %}
+      </div>
+      <div class="small text-secondary mb-2">{{ w.employee_id|default:"-" }}</div>
+      <div class="row text-center">
+        <div class="col"><div class="h5 mb-0">{{ w.completed_count }}</div><small class="text-secondary">Jobs done</small></div>
+        <div class="col"><div class="h5 mb-0">{{ w.avg_minutes|default:0|floatformat:0|minutes }}</div><small class="text-secondary">Avg time</small></div>
+        <div class="col"><div class="h5 mb-0">{{ w.rating }}</div><small class="text-secondary">Rating</small></div>
+      </div>
+    </div></div>
+  </div>
+  {% empty %}<p class="text-secondary">No workers yet. An admin can create users with the Worker role.</p>{% endfor %}
+</div>
+{% endblock %}

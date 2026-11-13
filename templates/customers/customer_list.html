@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Customers{% endblock %}
+{% block content %}
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+  <h1 class="h3 mb-0">{% icon "users" %}Customers</h1>
+  <div class="d-flex gap-2">
+    <a class="btn btn-outline-primary" href="{% url 'customers:quick_add' %}">{% icon "zap" %}Quick add</a>
+    <a class="btn btn-primary" href="{% url 'customers:create' %}">{% icon "plus" %}New customer</a>
+  </div>
+</div>
+<form class="mb-3" method="get"><div class="input-group">
+  <input class="form-control" name="q" value="{{ q }}" placeholder="Search name, phone, email or plate number">
+  <button class="btn btn-outline-secondary">{% icon "search" %}Search</button></div></form>
+<div class="card shadow-sm"><div class="table-responsive">
+<table class="table table-hover align-middle mb-0">
+  <thead><tr><th>Name</th><th>Phone</th><th>Visits</th><th></th></tr></thead>
+  <tbody>
+  {% for c in page %}
+    <tr>
+      <td><a href="{% url 'customers:detail' c.pk %}">{{ c.name }}</a>
+        {% if c.is_vip %}<span class="badge bg-warning text-dark">VIP</span>{% endif %}
+        {% if not c.is_active %}<span class="badge bg-secondary">Inactive</span>{% endif %}</td>
+      <td>{{ c.phone }}</td><td>{{ c.total_visits }}</td>
+      <td class="text-end"><a class="btn btn-sm btn-outline-primary" href="{% url 'customers:edit' c.pk %}">{% icon "square-pen" %}Edit</a></td>
+    </tr>
+  {% empty %}<tr><td colspan="4" class="text-center text-secondary py-4">No customers found.</td></tr>
+  {% endfor %}
+  </tbody>
+</table></div></div>
+{% include "partials/_pagination.html" %}
+{% endblock %}

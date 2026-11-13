@@ -1,0 +1,67 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  DJANGO_SETTINGS_MODULE: config.settings.dev
+  DJANGO_SECRET_KEY: ci-only-not-a-real-secret
+
+jobs:
+  test:
+    name: Tests (Python ${{ matrix.python }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ["3.12", "3.13"]
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: ${{ matrix.python }}
+          cache: pip
+      - run: pip install -r requirements.txt
+      - name: Django system check
+        run: python manage.py check
+      - name: Migrations are up to date
+        run: python manage.py makemigrations --check --dry-run
+      - name: Run tests
+        run: python manage.py test --noinput
+
+  deploy-check:
+    name: Production settings check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.13"
+          cache: pip
+      - run: pip install -r requirements.txt
+      - name: manage.py check --deploy
+        env:
+          DJANGO_SETTINGS_MODULE: config.settings.prod
+          DJANGO_SECRET_KEY: ci-only-not-a-real-secret-ci-only-not-a-real-secret-123456
+          ALLOWED_HOSTS: example.com
+        run: python manage.py check --deploy --fail-level ERROR
+
+  postgres-tests:
+    name: Tests on PostgreSQL (docker compose)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Run the suite against a throw-away PostgreSQL
+        run: docker compose -f docker-compose.test.yml run --rm --build tests
+      - name: Clean up
+        if: always()
+        run: docker compose -f docker-compose.test.yml down -v

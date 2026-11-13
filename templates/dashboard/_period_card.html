@@ -1,0 +1,7 @@
+{% load money %}
+<div class="col-md-4"><div class="card shadow-sm h-100"><div class="card-header fw-semibold">{{ label }}</div><div class="card-body">
+  <div class="d-flex justify-content-between"><span>Jobs completed</span><strong>{{ r.jobs }}</strong></div>
+  <div class="d-flex justify-content-between"><span>Billed</span><strong>{{ r.billed|money }}</strong></div>
+  <div class="d-flex justify-content-between"><span>Cash collected</span><strong>{{ r.collected|money }}</strong></div>
+  <div class="d-flex justify-content-between"><span>Avg time per job</span><strong>{{ r.avg_minutes|minutes }}</strong></div>
+</div></div></div>

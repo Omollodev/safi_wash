@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block title %}Not found{% endblock %}
+{% block content %}
+<div class="text-center py-5">
+  <h1 class="display-4">{% icon "compass" "text-primary" %}404</h1>
+  <p class="lead">We couldn't find that page.</p>
+  <a class="btn btn-primary" href="{% url 'dashboard:landing' %}">Go home</a>
+</div>
+{% endblock %}

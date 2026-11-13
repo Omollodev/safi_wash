@@ -1,0 +1,23 @@
+# DEVELOPMENT override: live code reload + Django dev settings + PostgreSQL.
+#
+#   docker compose -f docker-compose.yml -f docker-compose.dev.yml up --build
+#   (or simply: make docker-dev)
+#
+# Merges on top of docker-compose.yml, so the database service is shared.
+services:
+  db:
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-dev-only-password}   # safe default for a local laptop
+
+  web:
+    environment:
+      DJANGO_SETTINGS_MODULE: config.settings.dev
+      DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY:-dev-only-not-a-secret}
+      DATABASE_URL: postgres://${POSTGRES_USER:-carwash}:${POSTGRES_PASSWORD:-dev-only-password}@db:5432/${POSTGRES_DB:-carwash}
+    command: ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+    volumes:
+      - .:/app                   # edit code on your machine, container reloads
+    read_only: false
+    user: "${UID:-1000}:${GID:-1000}"
+    ports:
+      - "${WEB_PORT:-8000}:8000"

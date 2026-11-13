@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% comment %}
+  Generic "one form on a page" template. Other templates extend this and just
+  set the title/back link, so we don't repeat the same HTML 15 times.
+  Context: form, title (optional), back_url (optional), submit_label (optional)
+{% endcomment %}
+{% block title %}{{ title|default:"Form" }}{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-7">
+    <div class="card shadow-sm">
+      <div class="card-header fw-semibold">{% block heading %}{{ title|default:"Form" }}{% endblock %}</div>
+      <div class="card-body">
+        {% block before_form %}{% endblock %}
+        <form method="post" enctype="multipart/form-data" novalidate>
+          {% csrf_token %}
+          {% include "partials/_form_fields.html" %}
+          <div class="d-flex gap-2 mt-3">
+            <button class="btn btn-primary" type="submit">{% icon "check" %}{{ submit_label|default:"Save" }}</button>
+            <a class="btn btn-outline-secondary" href="{{ back_url|default:'javascript:history.back()' }}">Cancel</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

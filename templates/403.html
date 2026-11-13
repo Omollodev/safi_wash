@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block title %}Not allowed{% endblock %}
+{% block content %}
+<div class="text-center py-5">
+  <h1 class="display-4">{% icon "shield" "text-primary" %}403</h1>
+  <p class="lead">Your role does not have permission to open this page.</p>
+  <a class="btn btn-primary" href="{% url 'dashboard:home' %}">Back to my home</a>
+</div>
+{% endblock %}

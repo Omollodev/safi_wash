@@ -1,0 +1,30 @@
+{% extends "auth/base_auth.html" %}
+{% block title %}Create account | {{ BUSINESS.name }}{% endblock %}
+{% block brand_title %}Book once. We keep you posted.{% endblock %}
+{% block brand_text %}Add your car, choose your services and get alerted the moment it is ready.{% endblock %}
+{% block box_class %}auth__box--wide{% endblock %}
+{% block auth_body %}
+<h1>Create your account</h1>
+<p class="auth-lead">It takes a minute. You can book your first wash straight after.</p>
+<form method="post" novalidate data-busy-text="Creating account...">
+  {% csrf_token %}
+  {% if form.non_field_errors %}<div class="alert alert-danger" role="alert">{{ form.non_field_errors }}</div>{% endif %}
+  <div class="auth-grid">
+    {% for field in form %}
+      {% if field.name == "first_name" or field.name == "last_name" %}
+        {% include "auth/_field.html" with field=field half=True %}
+      {% else %}
+        {% include "auth/_field.html" with field=field %}
+      {% endif %}
+    {% endfor %}
+  </div>
+  <ul class="rules" data-rules aria-label="Password checklist">
+    <li data-rule="length">{% icon "circle" "rule-off" %}{% icon "circle-check" "rule-on" %}At least 8 characters <span class="visually-hidden" data-state>(not yet)</span></li>
+    <li data-rule="letters">{% icon "circle" "rule-off" %}{% icon "circle-check" "rule-on" %}Not only numbers <span class="visually-hidden" data-state>(not yet)</span></li>
+    <li data-rule="match">{% icon "circle" "rule-off" %}{% icon "circle-check" "rule-on" %}Both passwords match <span class="visually-hidden" data-state>(not yet)</span></li>
+  </ul>
+  <p class="auth-note">{% icon "mail-check" %}We email you a link to confirm your address before you can log in.</p>
+  <button class="auth-btn" type="submit">Create account</button>
+</form>
+<div class="auth-alt"><p>Already have an account? <a href="{% url 'accounts:login' %}">Log in</a></p></div>
+{% endblock %}

@@ -1,0 +1,28 @@
+{% load money %}
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Job #{{ job.pk }}</title>
+<style>
+  body { font-family: system-ui, sans-serif; max-width: 720px; margin: 2rem auto; color: #111; }
+  table { width: 100%; border-collapse: collapse; } td, th { padding: .4rem; border-bottom: 1px solid #ddd; text-align: left; }
+  .right { text-align: right; } h1, h2 { margin: 0 0 .25rem; } .muted { color: #666; font-size: .9rem; }
+</style></head>
+<body onload="window.print()">
+  <h1>{{ BUSINESS.name }}</h1>
+  <div class="muted">{{ BUSINESS.address }} &middot; {{ BUSINESS.phone }} &middot; {{ BUSINESS.email }}</div>
+  <hr>
+  <h2>Job card #{{ job.pk }} (queue #{{ job.queue_number }})</h2>
+  <p class="muted">{{ job.created_at|date:"d M Y H:i" }} &middot; Status: {{ job.get_status_display }}</p>
+  <p><strong>Customer:</strong> {{ job.customer.name }} ({{ job.customer.phone }})<br>
+     <strong>Vehicle:</strong> {{ job.vehicle.plate_number }} - {{ job.vehicle.description }}<br>
+     <strong>Worker:</strong> {{ job.assigned_worker.name|default:"-" }}</p>
+  <table>
+    <tr><th>Service</th><th class="right">Price</th></tr>
+    {% for line in lines %}<tr><td>{{ line.service.name }}</td><td class="right">{{ line.price|money }}</td></tr>{% endfor %}
+    {% if job.discount %}<tr><td>Discount</td><td class="right">- {{ job.discount|money }}</td></tr>{% endif %}
+    <tr><th>Total</th><th class="right">{{ job.total_price|money }}</th></tr>
+    <tr><td>Paid</td><td class="right">{{ job.amount_paid|money }}</td></tr>
+    <tr><td>Balance</td><td class="right">{{ job.balance_due|money }}</td></tr>
+  </table>
+  {% if job.special_instructions %}<p><strong>Instructions:</strong> {{ job.special_instructions }}</p>{% endif %}
+  <p class="muted">Thank you for choosing {{ BUSINESS.name }}.</p>
+</body></html>

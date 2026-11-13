@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}My jobs{% endblock %}
+{% block content %}
+<h1 class="h3 mb-3">{% icon "list-checks" %}My jobs</h1>
+{% if not profile %}
+  <div class="alert alert-warning">Your worker profile has not been set up yet. Ask an administrator.</div>
+{% else %}
+  <h2 class="h5">Active</h2>
+  <div class="row g-3 mb-4">
+    {% for j in active %}
+    <div class="col-md-6 col-xl-4">
+      <a class="card job-card priority-{{ j.priority }} text-decoration-none text-reset shadow-sm h-100" href="{% url 'jobs:detail' j.pk %}">
+        <div class="card-body">
+          <div class="d-flex justify-content-between"><strong>#{{ j.queue_number }} &middot; {{ j.vehicle.plate_number }}</strong>
+            <span class="badge {{ j.status_badge }}">{{ j.get_status_display }}</span></div>
+          <div class="small text-secondary">{{ j.vehicle.description }} &middot; {{ j.customer.name }}</div>
+          {% if j.need_alert %}<div class="small text-warning mt-1">{% icon "triangle-alert" %}Extra services pending</div>{% endif %}
+        </div>
+      </a>
+    </div>
+    {% empty %}<p class="text-secondary">No active jobs. Enjoy the quiet moment.</p>{% endfor %}
+  </div>
+  <h2 class="h5">Completed today</h2>
+  <ul class="list-group">
+    {% for j in done_today %}<li class="list-group-item"><a href="{% url 'jobs:detail' j.pk %}">Job #{{ j.pk }} &middot; {{ j.vehicle.plate_number }}</a></li>
+    {% empty %}<li class="list-group-item text-secondary">Nothing completed yet today.</li>{% endfor %}
+  </ul>
+{% endif %}
+{% endblock %}

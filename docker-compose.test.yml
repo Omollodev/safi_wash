@@ -1,0 +1,49 @@
+# TEST stack: throw-away PostgreSQL + the full test suite (+ security scanners).
+# Nothing here touches your real data or .env. Credentials below are CI-only throwaways.
+#
+#   docker compose -f docker-compose.test.yml run --rm --build tests     # unit/integration tests
+#   docker compose -f docker-compose.test.yml run --rm --build security  # bandit + pip-audit
+#   docker compose -f docker-compose.test.yml down -v                    # clean up
+#   (or simply: make docker-test / make docker-security)
+name: carwash-pro-test
+
+x-test-app: &test-app
+  build:
+    context: .
+    target: test
+  environment: &test-env
+    DJANGO_SETTINGS_MODULE: config.settings.dev
+    DJANGO_SECRET_KEY: test-only-not-a-secret
+    DATABASE_URL: postgres://carwash_test:carwash_test@db:5432/carwash_test
+    RUN_MIGRATIONS: "0"
+  depends_on:
+    db:
+      condition: service_healthy
+  networks: [default]
+
+services:
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: carwash_test
+      POSTGRES_USER: carwash_test
+      POSTGRES_PASSWORD: carwash_test
+    tmpfs: ["/var/lib/postgresql/data"]    # RAM only, vanishes on exit
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U carwash_test -d carwash_test"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+  tests:
+    <<: *test-app
+    command: >
+      sh -c "python manage.py check &&
+             python manage.py makemigrations --check --dry-run &&
+             python manage.py test --noinput"
+
+  security:
+    <<: *test-app
+    command: >
+      sh -c "bandit -q -r apps config -x '*/tests/*,apps/core/testing.py' -ll &&
+             pip-audit -r requirements.txt"

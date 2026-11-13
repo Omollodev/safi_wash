@@ -1,0 +1,17 @@
+{% extends "auth/base_auth.html" %}
+{% block title %}Log in | {{ BUSINESS.name }}{% endblock %}
+{% block auth_body %}
+<h1>Welcome back</h1>
+<p class="auth-lead">Log in to see your jobs, bookings and payments.</p>
+<form method="post" novalidate data-busy-text="Logging in...">
+  {% csrf_token %}
+  <input type="hidden" name="next" value="{{ next }}">
+  {% if form.non_field_errors %}<div class="alert alert-danger" role="alert">{{ form.non_field_errors }}</div>{% endif %}
+  {% for field in form %}{% include "auth/_field.html" with field=field %}{% endfor %}
+  <button class="auth-btn" type="submit">Log in</button>
+</form>
+<div class="auth-alt">
+  <p>New here? <a href="{% url 'portal:signup' %}">Create an account</a></p>
+  <p>No verification email? <a href="{% url 'accounts:resend_verification' %}">Send it again</a></p>
+</div>
+{% endblock %}

@@ -1,0 +1,52 @@
+# PRODUCTION-style stack: PostgreSQL + gunicorn, hardened containers.
+name: carwash-pro
+
+services:
+  db:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-carwash}
+      POSTGRES_USER: ${POSTGRES_USER:-carwash}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env (letters and digits only)}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    security_opt: ["no-new-privileges:true"]
+    networks: [backend]          # not published to the host: only the web container can reach it
+
+  web:
+    build:
+      context: .
+      target: runtime
+    image: carwash-pro:latest
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      DJANGO_SETTINGS_MODULE: config.settings.prod
+      DATABASE_URL: postgres://${POSTGRES_USER:-carwash}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-carwash}
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "${WEB_PORT:-8000}:8000"
+    volumes:
+      - media:/app/media         # uploaded job photos
+    read_only: true              # container filesystem is immutable...
+    tmpfs: ["/tmp"]              # ...except scratch space
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    networks: [backend, frontend]
+
+volumes:
+  pgdata:
+  media:
+
+networks:
+  backend:
+    internal: true               # no internet access for the database network
+  frontend:

@@ -1,0 +1,88 @@
+name: Security
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 4 * * 1"   # every Monday 04:00 UTC: new CVEs appear even when our code doesn't change
+
+permissions:
+  contents: read
+
+concurrency:
+  group: security-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  gitleaks:
+    name: Secret scan (gitleaks)
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write   # lets gitleaks comment on pull requests
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0     # scan the WHOLE history, not just the latest commit
+      - uses: gitleaks/gitleaks-action@v3
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITLEAKS_CONFIG: .gitleaks.toml
+          GITLEAKS_VERSION: 8.30.1
+          GITLEAKS_LICENSE: ${{ secrets.GITLEAKS_LICENSE }}
+
+  sast-sca:
+    name: Code & dependency scan (bandit, pip-audit)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.13"
+          cache: pip
+      - run: pip install -r requirements-dev.txt
+      - name: Bandit (static analysis of our code)
+        run: bandit -r apps config -x "*/tests/*,apps/core/testing.py" -ll
+      - name: pip-audit (known vulnerabilities in dependencies)
+        run: pip-audit -r requirements.txt
+
+  dependency-review:
+    name: Dependency review (pull requests)
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/dependency-review-action@v5
+        with:
+          fail-on-severity: moderate
+
+  container:
+    name: Image & Dockerfile scan (hadolint, trivy)
+    runs-on: ubuntu-latest
+    env:
+      HADOLINT_IMAGE: hadolint/hadolint:v2.15.1
+      TRIVY_IMAGE: aquasec/trivy:0.76.1
+    steps:
+      - uses: actions/checkout@v7
+      - name: Validate compose files
+        run: |
+          # docker-compose.yml reads .env (env_file), so the check needs one. CI throw-away values only.
+          printf 'DJANGO_SECRET_KEY=ci\nPOSTGRES_PASSWORD=ci\n' > .env
+          docker compose config -q
+          docker compose -f docker-compose.yml -f docker-compose.dev.yml config -q
+          docker compose -f docker-compose.test.yml config -q
+          rm -f .env
+      - name: Lint Dockerfile (hadolint)
+        run: docker run --rm -i "$HADOLINT_IMAGE" < Dockerfile
+      - name: Build production image
+        run: docker build --target runtime -t carwash-pro:ci .
+      - name: Scan image for HIGH/CRITICAL vulnerabilities (trivy)
+        run: |
+          docker run --rm -v /var/run/docker.sock:/var/run/docker.sock "$TRIVY_IMAGE" \
+            image --severity HIGH,CRITICAL --ignore-unfixed --exit-code 1 carwash-pro:ci
+      - name: Scan config files for misconfigurations (trivy)
+        run: |
+          docker run --rm -v "$PWD:/src" "$TRIVY_IMAGE" \
+            config --severity HIGH,CRITICAL --exit-code 1 /src

@@ -1,0 +1,8 @@
+{% extends "form_page.html" %}
+{% block heading %}New job{% endblock %}
+{% block before_form %}
+<div class="mb-3">
+  <input class="form-control form-control-sm" placeholder="Type to filter vehicles by plate or owner..." data-filter-select="#id_vehicle">
+  <div class="form-text">Can't find the vehicle? <a href="{% url 'customers:quick_add' %}">Quick-add a walk-in customer</a>.</div>
+</div>
+{% endblock %}
