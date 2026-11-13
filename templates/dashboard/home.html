@@ -1,28 +1,167 @@
 {% extends "base.html" %}
-{% load money %}
+{% load static money %}
 {% block title %}Dashboard{% endblock %}
-{% block content %}
-<div class="d-flex justify-content-between align-items-center mb-3">
-  <h1 class="h3 mb-0"><i class="bi bi-speedometer2" aria-hidden="true"></i> Dashboard</h1>
-  <div class="d-flex gap-2">
-    <a class="btn btn-outline-primary" href="{% url 'customers:quick_add' %}"><i class="bi bi-lightning"></i> Walk-in</a>
-    <a class="btn btn-primary" href="{% url 'jobs:create' %}"><i class="bi bi-plus-lg"></i> New job</a>
-  </div>
-</div>
-
-<div class="row g-3 mb-4">
-  <div class="col-6 col-lg-3"><div class="card stat-card shadow-sm"><div class="card-body"><div class="text-secondary small"><i class="bi bi-hourglass-split" aria-hidden="true"></i> Waiting</div><div class="display-6">{{ stats.waiting }}</div></div></div></div>
-  <div class="col-6 col-lg-3"><div class="card stat-card shadow-sm"><div class="card-body"><div class="text-secondary small"><i class="bi bi-droplet-half" aria-hidden="true"></i> In progress</div><div class="display-6">{{ stats.in_progress }}</div></div></div></div>
-  <div class="col-6 col-lg-3"><div class="card stat-card shadow-sm"><div class="card-body"><div class="text-secondary small"><i class="bi bi-check2-circle" aria-hidden="true"></i> Done today</div><div class="display-6">{{ stats.completed_today }}</div></div></div></div>
-  <div class="col-6 col-lg-3"><div class="card stat-card shadow-sm"><div class="card-body"><div class="text-secondary small"><i class="bi bi-cash-coin" aria-hidden="true"></i> Collected today</div><div class="h3 mt-2">{{ stats.collected_today|money }}</div></div></div></div>
-</div>
-
-{% if stats.alerts %}<div class="alert alert-warning"><i class="bi bi-exclamation-triangle-fill"></i> {{ stats.alerts }} job(s) have extra services pending.</div>{% endif %}
-
-<div class="row g-3" data-board-url="{% url 'jobs:api_board' %}" data-detail-url="{% url 'jobs:detail' 0 %}">
-  <div class="col-md-4"><div class="card shadow-sm h-100"><div class="card-header"><i class="bi bi-hourglass-split" aria-hidden="true"></i> Waiting</div><div class="card-body board-col" data-col="waiting"></div></div></div>
-  <div class="col-md-4"><div class="card shadow-sm h-100"><div class="card-header"><i class="bi bi-droplet-half" aria-hidden="true"></i> In progress</div><div class="card-body board-col" data-col="in_progress"></div></div></div>
-  <div class="col-md-4"><div class="card shadow-sm h-100"><div class="card-header"><i class="bi bi-exclamation-triangle" aria-hidden="true"></i> Awaiting extra services</div><div class="card-body board-col" data-col="awaiting_extra"></div></div></div>
-</div>
-<p class="text-secondary small mt-3">The board refreshes itself every 10 seconds. Workers available: {{ stats.workers_available }} of {{ stats.workers_total }}.</p>
+{% block head %}
+  <meta name="csrf-token" content="{{ csrf_token }}">
+  <link href="{% static 'css/dashboard.css' %}" rel="stylesheet">
 {% endblock %}
+{% block content %}
+<header class="page-head">
+  <div>
+    <h1 class="page-title">{% icon "gauge" "icon-lg" %}Dashboard</h1>
+    <p class="page-sub">{% now "l, j F Y" %}</p>
+  </div>
+  <form class="quick-search" role="search" action="{% url 'jobs:list' %}" method="get">
+    <label class="visually-hidden" for="quick-q">Search jobs by plate, customer or phone</label>
+    <div class="input-icon">
+      {% icon "search" %}
+      <input id="quick-q" name="q" type="search" class="form-control" placeholder="Search plate, customer or phone" autocomplete="off" data-quick-search>
+      <kbd class="quick-search__key" aria-hidden="true">/</kbd>
+    </div>
+  </form>
+  <div class="page-actions">
+    <a class="btn btn-outline-primary" href="{% url 'customers:quick_add' %}">{% icon "zap" %}Walk-in</a>
+    <a class="btn btn-primary" href="{% url 'jobs:create' %}">{% icon "plus" %}New job</a>
+  </div>
+</header>
+
+<section class="kpi-grid" aria-label="Today at a glance" data-stats-url="{% url 'dashboard:api_stats' %}" data-currency="{{ BUSINESS.currency }}">
+  {% for card in cards %}{% include "dashboard/_kpi.html" with k=card %}{% endfor %}
+</section>
+
+{% if stats.alerts %}<div class="alert alert-warning d-flex align-items-center gap-2" role="status">{% icon "triangle-alert" "m-0" %}<span>{{ stats.alerts }} job(s) have extra services pending.</span><a class="ms-auto alert-link" href="{% url 'jobs:list' %}?status=awaiting_extra">Review</a></div>{% endif %}
+
+<section class="board" aria-labelledby="board-title" data-board-url="{% url 'jobs:api_board' %}" data-detail-url="{% url 'jobs:detail' 0 %}" data-status-url="{% url 'jobs:change_status' 0 %}" data-new-url="{% url 'jobs:create' %}">
+  <div class="section-head">
+    <h2 id="board-title" class="section-title">Live job board</h2>
+    <div class="refresh-status">
+      <span class="live-dot" data-live-dot aria-hidden="true"></span>
+      <span data-refresh-label>Live</span>
+      <span class="text-secondary" data-refresh-time>&middot; updating every 10 seconds</span>
+      <button class="btn btn-sm btn-outline-secondary" type="button" data-refresh aria-label="Refresh the job board now">{% icon "refresh-cw" "m-0" %}</button>
+    </div>
+  </div>
+  <p class="visually-hidden" role="status" aria-live="polite" data-announce></p>
+  <div class="board-flash" data-flash hidden></div>
+  <div class="board-grid">
+    <section class="card board-column" aria-labelledby="h-waiting">
+      <header class="card-header board-head"><h3 id="h-waiting">{% icon "clock" %}Waiting</h3><span class="count-chip" data-count="waiting">0</span></header>
+      <div class="card-body board-col" data-col="waiting"></div>
+    </section>
+    <section class="card board-column" aria-labelledby="h-progress">
+      <header class="card-header board-head"><h3 id="h-progress">{% icon "droplets" %}In progress</h3><span class="count-chip" data-count="in_progress">0</span></header>
+      <div class="card-body board-col" data-col="in_progress"></div>
+    </section>
+    <section class="card board-column" aria-labelledby="h-extra">
+      <header class="card-header board-head"><h3 id="h-extra">{% icon "triangle-alert" %}Awaiting extra services</h3><span class="count-chip" data-count="awaiting_extra">0</span></header>
+      <div class="card-body board-col" data-col="awaiting_extra"></div>
+    </section>
+  </div>
+  <noscript><p class="text-secondary small mt-2">The live board needs JavaScript. <a href="{% url 'jobs:list' %}">Open the full job list</a> instead.</p></noscript>
+  {{ board|json_script:"board-data" }}
+</section>
+
+<div class="insights">
+  <section class="card insights__revenue" aria-labelledby="rev-title">
+    <header class="card-header board-head">
+      <h2 id="rev-title" class="card-title-sm">{% icon "chart-no-axes-combined" %}Revenue collected</h2>
+      <nav class="range-switch" aria-label="Revenue period">
+        <a href="?range=7" {% if revenue.days == 7 %}aria-current="true" class="is-active"{% endif %}>7 days</a>
+        <a href="?range=30" {% if revenue.days == 30 %}aria-current="true" class="is-active"{% endif %}>30 days</a>
+      </nav>
+    </header>
+    <div class="card-body">
+      {% if revenue.has_data %}
+        <div class="revenue-summary">
+          <div><span class="revenue-summary__label">Total, last {{ revenue.days }} days</span><strong class="revenue-summary__value">{{ revenue.total|money }}</strong></div>
+          <div><span class="revenue-summary__label">Average per day</span><strong class="revenue-summary__value revenue-summary__value--sub">{{ revenue.average|money }}</strong></div>
+          {% if revenue.best %}<div><span class="revenue-summary__label">Best day</span><strong class="revenue-summary__value revenue-summary__value--sub">{{ revenue.best.date|date:"D j M" }}</strong></div>{% endif %}
+        </div>
+        <div class="chart-scroll">
+          <svg class="chart chart--{{ revenue.days }}" viewBox="0 0 {{ revenue.w }} {{ revenue.h }}" role="img" aria-labelledby="chart-title chart-desc">
+            <title id="chart-title">Money collected per day, last {{ revenue.days }} days</title>
+            <desc id="chart-desc">Total {{ revenue.total|money }}. Best day {{ revenue.best.date|date:"j F" }}, {{ revenue.best.value|money }}.</desc>
+            {% for t in revenue.ticks %}
+              <line class="chart__grid" x1="{{ revenue.left }}" x2="{{ revenue.plot_right }}" y1="{{ t.y }}" y2="{{ t.y }}"/>
+              <text class="chart__axis" x="{{ revenue.left|add:"-8" }}" y="{{ t.y }}" text-anchor="end" dominant-baseline="middle">{{ t.value|floatformat:"0g" }}</text>
+            {% endfor %}
+            {% for p in revenue.points %}
+              <rect class="chart__bar{% if p.is_today %} is-today{% endif %}" x="{{ p.x }}" y="{{ p.y }}" width="{{ p.w }}" height="{{ p.h }}" rx="4"><title>{{ p.date|date:"D j M" }}: {{ p.value|money }}</title></rect>
+              {% if p.label %}<text class="chart__axis" x="{{ p.cx }}" y="{{ revenue.h|add:"-8" }}" text-anchor="middle">{{ p.label }}</text>{% endif %}
+            {% endfor %}
+          </svg>
+        </div>
+        <table class="visually-hidden"><caption>Money collected per day</caption><thead><tr><th>Day</th><th>Collected</th></tr></thead>
+          <tbody>{% for p in revenue.points %}<tr><td>{{ p.date|date:"D j M" }}</td><td>{{ p.value|money }}</td></tr>{% endfor %}</tbody></table>
+      {% else %}
+        {% include "partials/_empty.html" with icon="chart-no-axes-combined" title="No payments in this period" text="Cash and M-Pesa payments you record will build this chart." %}
+      {% endif %}
+    </div>
+  </section>
+
+  <section class="card insights__team" aria-labelledby="team-title">
+    <header class="card-header board-head">
+      <h2 id="team-title" class="card-title-sm">{% icon "contact" %}Worker availability</h2>
+      <a class="small" href="{% url 'workforce:list' %}">All workers</a>
+    </header>
+    <div class="card-body">
+      {% if team.rows %}
+        <ul class="team-list">
+          {% for r in team.rows %}
+            <li>
+              <span class="avatar" aria-hidden="true">{{ r.worker.user|initials }}</span>
+              <span class="team-list__who"><strong>{{ r.worker.name }}</strong>
+                {% if r.job %}<small><a href="{% url 'jobs:detail' r.job.pk %}">On {{ r.job.vehicle.plate_number }}</a></small>{% endif %}</span>
+              {% if r.state == "busy" %}<span class="badge bg-primary">Busy</span>{% elif r.state == "available" %}<span class="badge bg-success">Available</span>{% else %}<span class="badge bg-secondary">Off duty</span>{% endif %}
+            </li>
+          {% endfor %}
+        </ul>
+        {% if team.more %}<p class="small text-secondary mb-0 mt-2">and {{ team.more }} more.</p>{% endif %}
+        <p class="small text-secondary mb-0 mt-3">Workers available: {{ stats.workers_available }} of {{ stats.workers_total }}.</p>
+      {% else %}
+        {% include "partials/_empty.html" with icon="users" title="No workers yet" text="Workers you add will show here, with who is free and who is on a job." %}
+      {% endif %}
+    </div>
+  </section>
+
+  <section class="card insights__activity" aria-labelledby="act-title">
+    <header class="card-header board-head"><h2 id="act-title" class="card-title-sm">{% icon "activity" %}Recent activity</h2></header>
+    <div class="card-body">
+      {% if activity %}
+        <ol class="activity">
+          {% for a in activity %}
+            <li>
+              <span class="activity__icon{% if a.alert %} is-alert{% endif %}">{% icon a.icon "icon-sm m-0" %}</span>
+              <div><a class="activity__text" href="{% url 'jobs:detail' a.job_id %}">{{ a.text }}</a>
+                <small>{{ a.plate }} &middot; {{ a.who }} &middot; {{ a.at|timesince }} ago</small></div>
+            </li>
+          {% endfor %}
+        </ol>
+      {% else %}
+        {% include "partials/_empty.html" with icon="activity" title="Nothing has happened yet" text="Job changes, payments and assignments will appear here as they happen." %}
+      {% endif %}
+    </div>
+  </section>
+
+  <section class="card insights__payments" aria-labelledby="pay-title">
+    <header class="card-header board-head"><h2 id="pay-title" class="card-title-sm">{% icon "wallet" %}Recent transactions</h2></header>
+    <div class="card-body">
+      {% if transactions %}
+        <ul class="txn-list">
+          {% for t in transactions %}
+            <li>
+              <span class="activity__icon">{% if t.method == "mpesa" %}{% icon "smartphone" "icon-sm m-0" %}{% else %}{% icon "banknote" "icon-sm m-0" %}{% endif %}</span>
+              <div class="txn-list__who"><a href="{% url 'jobs:detail' t.job_id %}">{{ t.job.vehicle.plate_number }}</a>
+                <small>{{ t.job.customer.name }} &middot; {{ t.get_method_display }} &middot; {{ t.created_at|timesince }} ago</small></div>
+              <strong class="txn-list__amount{% if t.is_refund %} is-refund{% endif %}">{{ t.amount|money }}</strong>
+            </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        {% include "partials/_empty.html" with icon="wallet" title="No payments recorded yet" text="Cash and M-Pesa payments will be listed here." %}
+      {% endif %}
+    </div>
+  </section>
+</div>
+{% endblock %}
+{% block scripts %}<script src="{% static 'js/dashboard.js' %}" defer></script>{% endblock %}

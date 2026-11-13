@@ -10,7 +10,7 @@
     <div class="card shadow-sm mb-3"><div class="card-header">Services</div>
       <ul class="list-group list-group-flush">
         {% for line in lines %}<li class="list-group-item d-flex justify-content-between">
-          <span>{% if line.is_completed %}<i class="bi bi-check-circle-fill text-success"></i>{% else %}<i class="bi bi-hourglass-split text-secondary"></i>{% endif %} {{ line.service.name }}</span>
+          <span>{% if line.is_completed %}{% icon "circle-check" "text-success" %}{% else %}{% icon "clock" "text-secondary" %}{% endif %} {{ line.service.name }}</span>
           <span>{{ line.price|money }}</span></li>{% endfor %}
       </ul></div>
     <div class="card shadow-sm"><div class="card-header">Progress</div><div class="card-body">
@@ -26,7 +26,7 @@
 
         {% if mpesa and mpesa.status == 'pending' %}
           <div class="alert alert-info mt-3 mb-0" data-mpesa-status-url="{% url 'payments:mpesa_status' mpesa.pk %}">
-            <i class="bi bi-phone"></i> Waiting for you to enter your M-Pesa PIN&hellip;
+            {% icon "smartphone" %}Waiting for you to enter your M-Pesa PIN&hellip;
             {% if fake_mode %}
             <form method="post" action="{% url 'payments:mpesa_simulate' mpesa.pk %}" class="mt-2 d-flex gap-2">{% csrf_token %}
               <button class="btn btn-sm btn-success" name="outcome" value="ok">Simulate: paid</button>
@@ -40,7 +40,7 @@
             <input class="form-control mb-2" name="phone" value="{{ default_phone }}" placeholder="07XXXXXXXX" required>
             <div class="input-group"><span class="input-group-text">KES</span>
               <input class="form-control" name="amount" type="number" step="0.01" min="1" max="{{ job.balance_due }}" value="{{ job.balance_due }}" required>
-              <button class="btn btn-success"><i class="bi bi-phone" aria-hidden="true"></i> Pay</button></div>
+              <button class="btn btn-success">{% icon "smartphone" %}Pay</button></div>
           </form>
           {% if fake_mode %}<div class="form-text">Demo mode: no real money moves.</div>{% endif %}
         {% endif %}

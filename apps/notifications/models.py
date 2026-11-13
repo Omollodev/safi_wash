@@ -38,10 +38,10 @@ class Notification(models.Model):
     @property
     def icon(self):
         return {
-            "job_assigned": "bi-person-check",
-            "job_updated": "bi-arrow-repeat",
-            "job_completed": "bi-check-circle",
-            "extra_service": "bi-plus-circle",
-            "payment": "bi-cash-coin",
-            "alert": "bi-exclamation-triangle",
-        }.get(self.type, "bi-info-circle")
+            "job_assigned": "user-check",
+            "job_updated": "refresh-cw",
+            "job_completed": "circle-check",
+            "extra_service": "circle-plus",
+            "payment": "wallet",
+            "alert": "triangle-alert",
+        }.get(self.type, "info")

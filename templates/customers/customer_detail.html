@@ -7,7 +7,7 @@
     <h1 class="h3 mb-0">{{ customer.name }} {% if customer.is_vip %}<span class="badge bg-warning text-dark">VIP</span>{% endif %}</h1>
     <div class="text-secondary">{{ customer.phone }}{% if customer.email %} &middot; {{ customer.email }}{% endif %}</div>
   </div>
-  <a class="btn btn-outline-primary" href="{% url 'customers:edit' customer.pk %}"><i class="bi bi-pencil-square" aria-hidden="true"></i> Edit</a>
+  <a class="btn btn-outline-primary" href="{% url 'customers:edit' customer.pk %}">{% icon "square-pen" %}Edit</a>
 </div>
 <div class="row g-3">
   <div class="col-lg-4">
@@ -24,14 +24,14 @@
   <div class="col-lg-8">
     <div class="card shadow-sm mb-3">
       <div class="card-header d-flex justify-content-between"><span>Vehicles</span>
-        <a class="btn btn-sm btn-primary" href="{% url 'customers:vehicle_create' customer.pk %}"><i class="bi bi-plus-lg" aria-hidden="true"></i> Add vehicle</a></div>
+        <a class="btn btn-sm btn-primary" href="{% url 'customers:vehicle_create' customer.pk %}">{% icon "plus" %}Add vehicle</a></div>
       <ul class="list-group list-group-flush">
         {% for v in vehicles %}
         <li class="list-group-item d-flex justify-content-between align-items-center">
           <div><a href="{% url 'customers:vehicle_detail' v.pk %}"><strong>{{ v.plate_number }}</strong></a> &middot; {{ v.description }}</div>
           <div>
-            <a class="btn btn-sm btn-outline-secondary" href="{% url 'customers:vehicle_edit' v.pk %}"><i class="bi bi-pencil-square" aria-hidden="true"></i> Edit</a>
-            <a class="btn btn-sm btn-success" href="{% url 'jobs:create' %}?vehicle={{ v.pk }}"><i class="bi bi-clipboard-plus" aria-hidden="true"></i> New job</a>
+            <a class="btn btn-sm btn-outline-secondary" href="{% url 'customers:vehicle_edit' v.pk %}">{% icon "square-pen" %}Edit</a>
+            <a class="btn btn-sm btn-success" href="{% url 'jobs:create' %}?vehicle={{ v.pk }}">{% icon "clipboard-plus" %}New job</a>
           </div>
         </li>
         {% empty %}<li class="list-group-item text-secondary">No vehicles yet.</li>{% endfor %}

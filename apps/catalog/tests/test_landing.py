@@ -56,8 +56,8 @@ class LandingTests(TestCase):
         make_service("Wash", "exterior")
         make_service("Vacuum", "interior")
         response = self.get()
-        self.assertContains(response, "bi-droplet-half")
-        self.assertContains(response, "bi-wind")
+        self.assertContains(response, "icons.svg#droplets")
+        self.assertContains(response, "icons.svg#wind")
 
     def test_services_grouped_into_tabs_with_prices(self):
         make_service("Basic wash", "exterior", "500")

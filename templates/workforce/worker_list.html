@@ -3,8 +3,8 @@
 {% block title %}Workers{% endblock %}
 {% block content %}
 <div class="d-flex justify-content-between align-items-center mb-3">
-  <h1 class="h3 mb-0"><i class="bi bi-person-badge" aria-hidden="true"></i> Workers</h1>
-  {% if user.role == 'admin' %}<a class="btn btn-primary" href="{% url 'accounts:user_create' %}"><i class="bi bi-person-plus" aria-hidden="true"></i> Add worker (create user)</a>{% endif %}
+  <h1 class="h3 mb-0">{% icon "contact" %}Workers</h1>
+  {% if user.role == 'admin' %}<a class="btn btn-primary" href="{% url 'accounts:user_create' %}">{% icon "user-plus" %}Add worker (create user)</a>{% endif %}
 </div>
 <div class="row g-3">
   {% for w in workers %}

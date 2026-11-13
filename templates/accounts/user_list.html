@@ -2,8 +2,8 @@
 {% block title %}Users{% endblock %}
 {% block content %}
 <div class="d-flex justify-content-between align-items-center mb-3">
-  <h1 class="h3 mb-0"><i class="bi bi-shield-lock" aria-hidden="true"></i> Users</h1>
-  <a class="btn btn-primary" href="{% url 'accounts:user_create' %}"><i class="bi bi-plus-lg"></i> New user</a>
+  <h1 class="h3 mb-0">{% icon "shield" %}Users</h1>
+  <a class="btn btn-primary" href="{% url 'accounts:user_create' %}">{% icon "plus" %}New user</a>
 </div>
 <div class="btn-group mb-3">
   <a class="btn btn-sm btn-outline-secondary {% if not current_role %}active{% endif %}" href="?">All</a>
@@ -18,7 +18,7 @@
       <td>{{ u.username }}</td><td>{{ u.get_full_name|default:"-" }}</td><td>{{ u.get_role_display }}</td><td>{{ u.email|default:"-" }}</td>
       <td>{% if u.is_active %}<span class="badge bg-success">Active</span>{% else %}<span class="badge bg-secondary">Inactive</span>{% endif %}</td>
       <td class="text-end">
-        <a class="btn btn-sm btn-outline-primary" href="{% url 'accounts:user_edit' u.pk %}"><i class="bi bi-pencil-square" aria-hidden="true"></i> Edit</a>
+        <a class="btn btn-sm btn-outline-primary" href="{% url 'accounts:user_edit' u.pk %}">{% icon "square-pen" %}Edit</a>
         {% if u != user %}<form class="d-inline" method="post" action="{% url 'accounts:user_toggle_active' u.pk %}">{% csrf_token %}<button class="btn btn-sm btn-outline-secondary">{% if u.is_active %}Deactivate{% else %}Activate{% endif %}</button></form>{% endif %}
       </td>
     </tr>

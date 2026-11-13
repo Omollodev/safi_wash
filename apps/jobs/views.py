@@ -235,14 +235,7 @@ def api_job_timeline(request, pk):
 @worker_or_staff_required
 def api_board(request):
     """Active jobs grouped by status for the live kanban board."""
-    board = {"waiting": [], "in_progress": [], "awaiting_extra": []}
-    for job in selectors.active_jobs():
-        board[job.status].append({
-            "id": job.pk, "queue": job.queue_number, "plate": job.vehicle.plate_number,
-            "customer": job.customer.name, "priority": job.priority, "need_alert": job.need_alert,
-            "worker": job.assigned_worker.name if job.assigned_worker else None,
-        })
-    return JsonResponse({"board": board})
+    return JsonResponse({"board": selectors.board_payload()})
 
 
 @staff_required

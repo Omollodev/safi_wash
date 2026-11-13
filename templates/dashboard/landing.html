@@ -23,8 +23,8 @@
       <h1 id="hero-title">A spotless car,<br><span class="lp-blue">tracked live from drop-off to pickup.</span></h1>
       <p class="lp-lead">Professional washing, interior cleaning and detailing at clear prices. Book online, watch your job move through the queue, and pay with M-Pesa when it shines.</p>
       <div class="lp-actions">
-        <a class="lp-btn lp-btn--primary" href="{% url 'portal:signup' %}"><i class="bi bi-calendar-plus" aria-hidden="true"></i> Book a wash</a>
-        <a class="lp-btn lp-btn--outline" href="tel:{{ BUSINESS.phone|tel }}"><i class="bi bi-telephone" aria-hidden="true"></i> {{ BUSINESS.phone }}</a>
+        <a class="lp-btn lp-btn--primary" href="{% url 'portal:signup' %}">{% icon "calendar-plus" %}Book a wash</a>
+        <a class="lp-btn lp-btn--outline" href="tel:{{ BUSINESS.phone|tel }}">{% icon "phone" %}{{ BUSINESS.phone }}</a>
       </div>
     </div>
     <div class="lp-hero__media">
@@ -42,10 +42,10 @@
 <!-- Floating facts bar (facts about the business, not invented numbers) -->
 <div class="lp-wrap lp-facts-wrap">
   <ul class="lp-facts" aria-label="At a glance">
-    <li><i class="bi bi-clock" aria-hidden="true"></i><div><strong>{{ BUSINESS.hours }}</strong><span>Opening hours</span></div></li>
-    <li><i class="bi bi-phone" aria-hidden="true"></i><div><strong>M-Pesa and cash</strong><span>Pay the way you prefer</span></div></li>
-    <li><i class="bi bi-broadcast" aria-hidden="true"></i><div><strong>Live tracking</strong><span>Every service ticked off</span></div></li>
-    {% if service_count %}<li><i class="bi bi-tag" aria-hidden="true"></i><div><strong>{{ service_count }} service{{ service_count|pluralize }}</strong><span>Priced up front</span></div></li>{% endif %}
+    <li>{% icon "clock" %}<div><strong>{{ BUSINESS.hours }}</strong><span>Opening hours</span></div></li>
+    <li>{% icon "smartphone" %}<div><strong>M-Pesa and cash</strong><span>Pay the way you prefer</span></div></li>
+    <li>{% icon "radio" %}<div><strong>Live tracking</strong><span>Every service ticked off</span></div></li>
+    {% if service_count %}<li>{% icon "tag" %}<div><strong>{{ service_count }} service{{ service_count|pluralize }}</strong><span>Priced up front</span></div></li>{% endif %}
   </ul>
 </div>
 
@@ -64,7 +64,7 @@
         {% for cat in categories %}
           <button class="lp-tab" role="tab" id="tab-{{ cat.key }}" aria-controls="panel-{{ cat.key }}"
                   aria-selected="{% if forloop.first %}true{% else %}false{% endif %}" {% if not forloop.first %}tabindex="-1"{% endif %} type="button">
-            <i class="bi {{ cat.icon }}" aria-hidden="true"></i> {{ cat.label }} <span class="lp-tab__count">{{ cat.services|length }}</span>
+            {% icon cat.icon %}{{ cat.label }} <span class="lp-tab__count">{{ cat.services|length }}</span>
           </button>
         {% endfor %}
       </div>
@@ -76,12 +76,12 @@
           {% for s in cat.services %}
           <li class="lp-card reveal">
             <div class="lp-card__top">
-              <i class="lp-card__icon bi {{ cat.icon }}" aria-hidden="true"></i>
+              {% icon cat.icon "lp-card__icon" %}
               <h4>{{ s.name }}</h4>
               <p class="lp-price">{{ s.price|money }}</p>
             </div>
             {% if s.description %}<p class="lp-card__text">{{ s.description }}</p>{% endif %}
-            <p class="lp-card__meta"><i class="bi bi-stopwatch" aria-hidden="true"></i> about {{ s.estimated_duration|minutes }}{% if s.is_extra %} &middot; <span class="lp-tag">Add-on</span>{% endif %}</p>
+            <p class="lp-card__meta">{% icon "timer" %}about {{ s.estimated_duration|minutes }}{% if s.is_extra %} &middot; <span class="lp-tag">Add-on</span>{% endif %}</p>
           </li>
           {% endfor %}
         </ul>
@@ -103,10 +103,10 @@
       <h2 id="how-title">From booking to shine in four steps</h2>
     </header>
     <ol class="lp-steps">
-      <li class="reveal"><span class="lp-step__icon"><i class="bi bi-calendar-check" aria-hidden="true"></i></span><h3>Book</h3><p>Create a free account, add your car and choose your services.</p></li>
-      <li class="reveal"><span class="lp-step__icon"><i class="bi bi-car-front" aria-hidden="true"></i></span><h3>Drop off</h3><p>Get your queue number and an estimated time as soon as you book.</p></li>
-      <li class="reveal"><span class="lp-step__icon"><i class="bi bi-broadcast" aria-hidden="true"></i></span><h3>Track live</h3><p>See each service ticked off. Any extras are shown and priced before we start them.</p></li>
-      <li class="reveal"><span class="lp-step__icon"><i class="bi bi-cash-coin" aria-hidden="true"></i></span><h3>Pay &amp; go</h3><p>Pay with M-Pesa from your phone, or cash at the counter.</p></li>
+      <li class="reveal"><span class="lp-step__icon">{% icon "calendar-check" %}</span><h3>Book</h3><p>Create a free account, add your car and choose your services.</p></li>
+      <li class="reveal"><span class="lp-step__icon">{% icon "car-front" %}</span><h3>Drop off</h3><p>Get your queue number and an estimated time as soon as you book.</p></li>
+      <li class="reveal"><span class="lp-step__icon">{% icon "radio" %}</span><h3>Track live</h3><p>See each service ticked off. Any extras are shown and priced before we start them.</p></li>
+      <li class="reveal"><span class="lp-step__icon">{% icon "wallet" %}</span><h3>Pay &amp; go</h3><p>Pay with M-Pesa from your phone, or cash at the counter.</p></li>
     </ol>
   </div>
 </section>
@@ -121,8 +121,8 @@
         <h2 id="gallery-title">Results that speak for themselves</h2>
       </div>
       <div class="lp-arrows" aria-label="Scroll gallery">
-        <button type="button" class="lp-arrow" data-gallery-prev aria-label="Previous photos"><i class="bi bi-arrow-left" aria-hidden="true"></i></button>
-        <button type="button" class="lp-arrow" data-gallery-next aria-label="Next photos"><i class="bi bi-arrow-right" aria-hidden="true"></i></button>
+        <button type="button" class="lp-arrow" data-gallery-prev aria-label="Previous photos">{% icon "arrow-left" %}</button>
+        <button type="button" class="lp-arrow" data-gallery-next aria-label="Next photos">{% icon "arrow-right" %}</button>
       </div>
     </header>
   </div>
@@ -139,7 +139,7 @@
 </section>
 
 <dialog id="lightbox" class="lp-dialog" closedby="any" aria-labelledby="lb-title">
-  <form method="dialog"><button class="lp-dialog__close" aria-label="Close photo"><i class="bi bi-x-lg" aria-hidden="true"></i></button></form>
+  <form method="dialog"><button class="lp-dialog__close" aria-label="Close photo">{% icon "x" %}</button></form>
   <img id="lb-img" alt="" width="1000" height="750">
   <p id="lb-title"></p>
 </dialog>
@@ -153,9 +153,9 @@
       <h2 id="why-title">Care you can see</h2>
     </header>
     <div class="lp-features">
-      <article class="reveal"><i class="bi bi-receipt" aria-hidden="true"></i><h3>Total transparency</h3><p>Every price is listed before you book, and extras are never added without being recorded on your job.</p></article>
-      <article class="reveal"><i class="bi bi-bell" aria-hidden="true"></i><h3>Alerts, not waiting</h3><p>Get notified the moment your car is ready, so you spend your time on something better.</p></article>
-      <article class="reveal"><i class="bi bi-wallet2" aria-hidden="true"></i><h3>Pay your way</h3><p>M-Pesa prompt to your phone or cash at the counter. A receipt trail for every payment.</p></article>
+      <article class="reveal">{% icon "receipt" %}<h3>Total transparency</h3><p>Every price is listed before you book, and extras are never added without being recorded on your job.</p></article>
+      <article class="reveal">{% icon "bell" %}<h3>Alerts, not waiting</h3><p>Get notified the moment your car is ready, so you spend your time on something better.</p></article>
+      <article class="reveal">{% icon "wallet" %}<h3>Pay your way</h3><p>M-Pesa prompt to your phone or cash at the counter. A receipt trail for every payment.</p></article>
     </div>
     {% if stats %}
     <dl class="lp-stats">
@@ -172,15 +172,15 @@
       <h2 id="contact-title">Give your car the clean it deserves</h2>
       <p>Book online in a minute, or just drive in.</p>
       <div class="lp-actions">
-        <a class="lp-btn lp-btn--primary" href="{% url 'portal:signup' %}"><i class="bi bi-person-plus" aria-hidden="true"></i> Create account &amp; book</a>
-        <a class="lp-btn lp-btn--outline" href="https://wa.me/{{ BUSINESS.phone|wa_number }}" rel="noopener"><i class="bi bi-whatsapp" aria-hidden="true"></i> WhatsApp us</a>
+        <a class="lp-btn lp-btn--primary" href="{% url 'portal:signup' %}">{% icon "user-plus" %}Create account &amp; book</a>
+        <a class="lp-btn lp-btn--outline" href="https://wa.me/{{ BUSINESS.phone|wa_number }}" rel="noopener">{% icon "message-circle" %}WhatsApp us</a>
       </div>
     </div>
     <address class="lp-address reveal">
-      <p><i class="bi bi-geo-alt" aria-hidden="true"></i> {{ BUSINESS.address }}</p>
-      <p><i class="bi bi-telephone" aria-hidden="true"></i> <a href="tel:{{ BUSINESS.phone|tel }}">{{ BUSINESS.phone }}</a></p>
-      <p><i class="bi bi-envelope" aria-hidden="true"></i> <a href="mailto:{{ BUSINESS.email }}">{{ BUSINESS.email }}</a></p>
-      <p><i class="bi bi-clock" aria-hidden="true"></i> {{ BUSINESS.hours }}</p>
+      <p>{% icon "map-pin" %}{{ BUSINESS.address }}</p>
+      <p>{% icon "phone" %}<a href="tel:{{ BUSINESS.phone|tel }}">{{ BUSINESS.phone }}</a></p>
+      <p>{% icon "mail" %}<a href="mailto:{{ BUSINESS.email }}">{{ BUSINESS.email }}</a></p>
+      <p>{% icon "clock" %}{{ BUSINESS.hours }}</p>
     </address>
   </div>
 </section>

@@ -10,7 +10,7 @@
   <div class="d-flex gap-2">
     <form method="post" action="{% url 'workforce:toggle_availability' worker.pk %}">{% csrf_token %}
       <button class="btn btn-outline-secondary">{% if worker.is_available %}Mark unavailable{% else %}Mark available{% endif %}</button></form>
-    <a class="btn btn-primary" href="{% url 'workforce:edit' worker.pk %}"><i class="bi bi-pencil-square" aria-hidden="true"></i> Edit</a>
+    <a class="btn btn-primary" href="{% url 'workforce:edit' worker.pk %}">{% icon "square-pen" %}Edit</a>
   </div>
 </div>
 <div class="row g-3">

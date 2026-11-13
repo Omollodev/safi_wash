@@ -50,6 +50,6 @@ class ToastApiTests(TestCase):
         self.login(self.manager)
         self.assertContains(self.client.get(reverse("dashboard:home")), "js/toast.js")
 
-    def test_every_notification_type_has_a_bootstrap_icon(self):
+    def test_every_notification_type_has_a_lucide_icon(self):
         for value, _ in Notification.Type.choices:
-            self.assertRegex(Notification(type=value).icon, r"^bi-[a-z0-9-]+$")
+            self.assertRegex(Notification(type=value).icon, r"^[a-z0-9]+(-[a-z0-9]+)*$")

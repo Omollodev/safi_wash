@@ -1,0 +1,15 @@
+{# One headline number: {% include "dashboard/_kpi.html" with k=card %} #}
+<article class="kpi" data-tone="{{ k.tone }}">
+  <span class="kpi__icon">{% icon k.icon "icon-lg m-0" %}</span>
+  <div class="kpi__body">
+    <h3 class="kpi__label">{{ k.label }}</h3>
+    <p class="kpi__value" data-stat="{{ k.stat }}">{{ k.value }}</p>
+    <p class="kpi__hint">
+      <span data-hint="{{ k.stat }}">{{ k.hint }}</span>
+      {% if k.trend %}<span class="trend trend--{{ k.trend.direction }}">
+        {% if k.trend.direction == "up" %}{% icon "trending-up" "icon-sm" %}{% elif k.trend.direction == "down" %}{% icon "trending-down" "icon-sm" %}{% else %}{% icon "minus" "icon-sm" %}{% endif %}
+        {% if k.trend.direction == "flat" %}Same as yesterday{% else %}{{ k.trend.pct }}% vs yesterday{% endif %}
+      </span>{% endif %}
+    </p>
+  </div>
+</article>

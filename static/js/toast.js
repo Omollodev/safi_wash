@@ -35,8 +35,8 @@
     card.setAttribute("role", "status");
     card.style.setProperty("--toast-ms", SHOW_MS + "ms");
 
-    const icon = make("i", "bi " + (/^bi-[a-z0-9-]+$/.test(n.icon) ? n.icon : "bi-bell-fill") + " toast-card__icon");
-    icon.setAttribute("aria-hidden", "true");
+    const icon = make("span", "toast-card__icon");
+    icon.appendChild(window.CARWASH.icon(n.icon, "bell"));
 
     const body = make("div", "toast-card__body");
     body.appendChild(make("strong", "toast-card__title", n.title));
@@ -50,8 +50,7 @@
     const close = make("button", "toast-card__close");
     close.type = "button";
     close.setAttribute("aria-label", "Dismiss notification");
-    close.appendChild(make("i", "bi bi-x-lg"));
-    close.firstChild.setAttribute("aria-hidden", "true");
+    close.appendChild(window.CARWASH.icon("x"));
 
     card.append(icon, body, close, make("span", "toast-card__bar"));
     region.prepend(card);
@@ -79,6 +78,7 @@
   }
 
   const badge = document.getElementById("bell-count");
+  const bell = document.getElementById("bell-link");
   let busy = false;
 
   async function check() {
@@ -90,8 +90,9 @@
       const data = await response.json();
 
       if (badge) {
-        badge.textContent = data.unread;
+        badge.textContent = data.unread > 99 ? "99+" : data.unread;
         badge.classList.toggle("d-none", data.unread === 0);
+        if (bell) bell.setAttribute("aria-label", data.unread ? "Notifications, " + data.unread + " unread" : "Notifications");
       }
 
       const newest = data.results.reduce((max, n) => Math.max(max, n.id), 0);
@@ -101,7 +102,7 @@
       if (newest > seen) store.set(newest);
 
       if (fresh.length > MAX_TOASTS) {
-        show({ title: fresh.length + " new notifications", message: "Open your notifications to see them all.", icon: "bi-bell-fill", type: "info", url: cfg.listUrl || "/notifications/" });
+        show({ title: fresh.length + " new notifications", message: "Open your notifications to see them all.", icon: "bell", type: "info", url: cfg.listUrl || "/notifications/" });
       } else {
         fresh.forEach(show);
       }

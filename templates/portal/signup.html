@@ -19,11 +19,11 @@
     {% endfor %}
   </div>
   <ul class="rules" data-rules aria-label="Password checklist">
-    <li data-rule="length"><i class="bi bi-circle" aria-hidden="true"></i> At least 8 characters <span class="visually-hidden" data-state>(not yet)</span></li>
-    <li data-rule="letters"><i class="bi bi-circle" aria-hidden="true"></i> Not only numbers <span class="visually-hidden" data-state>(not yet)</span></li>
-    <li data-rule="match"><i class="bi bi-circle" aria-hidden="true"></i> Both passwords match <span class="visually-hidden" data-state>(not yet)</span></li>
+    <li data-rule="length">{% icon "circle" "rule-off" %}{% icon "circle-check" "rule-on" %}At least 8 characters <span class="visually-hidden" data-state>(not yet)</span></li>
+    <li data-rule="letters">{% icon "circle" "rule-off" %}{% icon "circle-check" "rule-on" %}Not only numbers <span class="visually-hidden" data-state>(not yet)</span></li>
+    <li data-rule="match">{% icon "circle" "rule-off" %}{% icon "circle-check" "rule-on" %}Both passwords match <span class="visually-hidden" data-state>(not yet)</span></li>
   </ul>
-  <p class="auth-note"><i class="bi bi-envelope-check" aria-hidden="true"></i> We email you a link to confirm your address before you can log in.</p>
+  <p class="auth-note">{% icon "mail-check" %}We email you a link to confirm your address before you can log in.</p>
   <button class="auth-btn" type="submit">Create account</button>
 </form>
 <div class="auth-alt"><p>Already have an account? <a href="{% url 'accounts:login' %}">Log in</a></p></div>

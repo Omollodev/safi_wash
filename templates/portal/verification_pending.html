@@ -3,10 +3,10 @@
 {% block brand_title %}One last step before your first wash.{% endblock %}
 {% block brand_text %}Confirm your email so only you can see your jobs and payments.{% endblock %}
 {% block auth_body %}
-<div class="auth-icon"><i class="bi bi-envelope-check" aria-hidden="true"></i></div>
+<div class="auth-icon">{% icon "mail-check" %}</div>
 <h1>Check your email</h1>
 <p class="auth-lead">We sent a verification link to <strong>{{ email }}</strong>. It is valid for 24 hours.</p>
-<p class="auth-note"><i class="bi bi-terminal" aria-hidden="true"></i> Running locally? The email is printed in the terminal where <code>runserver</code> is running.</p>
+<p class="auth-note">{% icon "terminal" %}Running locally? The email is printed in the terminal where <code>runserver</code> is running.</p>
 <a class="auth-btn auth-btn--ghost" href="{% url 'accounts:resend_verification' %}">Send it again</a>
 <div class="auth-alt"><p><a href="{% url 'accounts:login' %}">Back to log in</a></p></div>
 {% endblock %}

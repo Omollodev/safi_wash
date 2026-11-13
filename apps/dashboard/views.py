@@ -53,7 +53,8 @@ def home(request):
         return redirect("portal:home")
     if role == "worker":
         return redirect("workforce:my_jobs")
-    return render(request, "dashboard/home.html", {"stats": selectors.overview()})
+    days = 30 if request.GET.get("range") == "30" else 7  # anything else falls back to 7
+    return render(request, "dashboard/home.html", selectors.dashboard(days))
 
 
 @staff_required

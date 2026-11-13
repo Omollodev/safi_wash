@@ -16,7 +16,7 @@
           {% csrf_token %}
           {% include "partials/_form_fields.html" %}
           <div class="d-flex gap-2 mt-3">
-            <button class="btn btn-primary" type="submit"><i class="bi bi-check-lg" aria-hidden="true"></i> {{ submit_label|default:"Save" }}</button>
+            <button class="btn btn-primary" type="submit">{% icon "check" %}{{ submit_label|default:"Save" }}</button>
             <a class="btn btn-outline-secondary" href="{{ back_url|default:'javascript:history.back()' }}">Cancel</a>
           </div>
         </form>

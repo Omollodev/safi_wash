@@ -14,14 +14,14 @@
   </div>
   <div class="d-flex gap-2 no-print">
     {% if user.is_staff_role %}
-      <a class="btn btn-outline-secondary" href="{% url 'jobs:print' job.pk %}" target="_blank"><i class="bi bi-printer"></i> Print</a>
-      {% if job.is_open %}<a class="btn btn-outline-primary" href="{% url 'jobs:edit' job.pk %}"><i class="bi bi-pencil-square" aria-hidden="true"></i> Edit</a>{% endif %}
+      <a class="btn btn-outline-secondary" href="{% url 'jobs:print' job.pk %}" target="_blank">{% icon "printer" %}Print</a>
+      {% if job.is_open %}<a class="btn btn-outline-primary" href="{% url 'jobs:edit' job.pk %}">{% icon "square-pen" %}Edit</a>{% endif %}
     {% endif %}
   </div>
 </div>
 
 {% if job.need_alert %}
-<div class="alert alert-warning"><i class="bi bi-exclamation-triangle-fill"></i> Extra services are still pending on this job.</div>
+<div class="alert alert-warning">{% icon "triangle-alert" %}Extra services are still pending on this job.</div>
 {% endif %}
 
 <div class="row g-3">
@@ -34,7 +34,7 @@
         <li class="list-group-item">
           <div class="d-flex justify-content-between align-items-start gap-2">
             <div>
-              {% if line.is_completed %}<i class="bi bi-check-circle-fill text-success"></i>{% else %}<i class="bi bi-circle text-secondary"></i>{% endif %}
+              {% if line.is_completed %}{% icon "circle-check" "text-success" %}{% else %}{% icon "circle" "text-secondary" %}{% endif %}
               <strong>{{ line.service.name }}</strong>
               {% if line.service.is_extra %}<span class="badge bg-info text-dark">Extra</span>{% endif %}
               <div class="small text-secondary">{{ line.price|money }}
@@ -45,9 +45,9 @@
             {% if can_update_services and job.is_open %}
             <div class="text-nowrap">
               {% if line.is_completed %}
-                <form method="post" action="{% url 'jobs:service_uncomplete' job.pk line.pk %}">{% csrf_token %}<button class="btn btn-sm btn-outline-secondary"><i class="bi bi-arrow-counterclockwise" aria-hidden="true"></i> Re-open</button></form>
+                <form method="post" action="{% url 'jobs:service_uncomplete' job.pk line.pk %}">{% csrf_token %}<button class="btn btn-sm btn-outline-secondary">{% icon "rotate-ccw" %}Re-open</button></form>
               {% else %}
-                <button class="btn btn-sm btn-success" data-bs-toggle="collapse" data-bs-target="#done-{{ line.pk }}"><i class="bi bi-check2" aria-hidden="true"></i> Mark done</button>
+                <button class="btn btn-sm btn-success" data-bs-toggle="collapse" data-bs-target="#done-{{ line.pk }}">{% icon "check" %}Mark done</button>
               {% endif %}
             </div>
             {% endif %}
@@ -58,7 +58,7 @@
               {% csrf_token %}
               <div class="col-md-6"><input class="form-control form-control-sm" name="notes" placeholder="Notes (optional)"></div>
               <div class="col-md-4"><input class="form-control form-control-sm" type="file" name="photo" accept="image/*"></div>
-              <div class="col-md-2"><button class="btn btn-sm btn-success w-100"><i class="bi bi-check-lg" aria-hidden="true"></i> Save</button></div>
+              <div class="col-md-2"><button class="btn btn-sm btn-success w-100">{% icon "check" %}Save</button></div>
             </form>
           </div>
           {% endif %}
@@ -71,7 +71,7 @@
           {% csrf_token %}
           <div class="col-md-5">{{ service_form.service }}</div>
           <div class="col-md-3">{{ service_form.price }}</div>
-          <div class="col-md-2"><button class="btn btn-outline-primary w-100"><i class="bi bi-plus-circle" aria-hidden="true"></i> Add extra</button></div>
+          <div class="col-md-2"><button class="btn btn-outline-primary w-100">{% icon "circle-plus" %}Add extra</button></div>
         </form>
       </div>
       {% endif %}
@@ -105,7 +105,7 @@
       {% if user.is_staff_role %}
       <form method="post" action="{% url 'jobs:cancel' job.pk %}" onsubmit="return confirm('Cancel this job?')">{% csrf_token %}
         <input class="form-control form-control-sm mb-2" name="reason" placeholder="Reason for cancelling">
-        <button class="btn btn-outline-danger w-100"><i class="bi bi-x-lg" aria-hidden="true"></i> Cancel job</button></form>
+        <button class="btn btn-outline-danger w-100">{% icon "x" %}Cancel job</button></form>
       {% endif %}
     </div></div>
     {% endif %}
@@ -115,7 +115,7 @@
       <p class="mb-2">{{ job.assigned_worker.name|default:"Not assigned" }}</p>
       {% if user.is_staff_role and job.is_open %}
       <form method="post" action="{% url 'jobs:assign_worker' job.pk %}" class="d-flex gap-2">{% csrf_token %}
-        {{ worker_form.worker }}<button class="btn btn-outline-primary"><i class="bi bi-person-plus" aria-hidden="true"></i> Assign</button></form>
+        {{ worker_form.worker }}<button class="btn btn-outline-primary">{% icon "user-plus" %}Assign</button></form>
       {% endif %}
     </div></div>
 
@@ -132,12 +132,12 @@
         <form method="post" action="{% url 'payments:cash' job.pk %}">{% csrf_token %}
           <label class="form-label small">Record cash received</label>
           <div class="input-group"><input class="form-control" name="amount" type="number" step="0.01" min="0.01" value="{{ job.balance_due }}" required>
-            <button class="btn btn-success"><i class="bi bi-check-lg" aria-hidden="true"></i> Save</button></div></form>
+            <button class="btn btn-success">{% icon "check" %}Save</button></div></form>
         {% endif %}
         {% if user.is_staff_role and job.amount_paid > 0 %}
         <form method="post" action="{% url 'payments:refund' job.pk %}" class="mt-2" onsubmit="return confirm('Record a refund?')">{% csrf_token %}
           <div class="input-group input-group-sm"><input class="form-control" name="amount" type="number" step="0.01" min="0.01" placeholder="Refund amount" required>
-            <button class="btn btn-outline-danger"><i class="bi bi-arrow-counterclockwise" aria-hidden="true"></i> Refund</button></div></form>
+            <button class="btn btn-outline-danger">{% icon "rotate-ccw" %}Refund</button></div></form>
         {% endif %}
         {% if payments %}<hr><ul class="list-unstyled small mb-0">
           {% for p in payments %}<li>{{ p.created_at|date:"d M H:i" }} &middot; {{ p.get_method_display }} &middot; {{ p.amount|money }}{% if p.reference %} &middot; {{ p.reference }}{% endif %}</li>{% endfor %}

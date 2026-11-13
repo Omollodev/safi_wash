@@ -23,6 +23,8 @@ main { flex: 1; }
 .toast-card--alert .toast-card__icon { background: #fef3f2; color: #b42318; }
 .toast-card--alert .toast-card__bar { background: #b42318; }
 .toast-card__icon { display: grid; place-items: center; width: 2.2rem; height: 2.2rem; border-radius: .65rem; background: var(--wash); color: var(--brand); font-size: 1.05rem; }
+.toast-card__icon .icon { margin: 0; }
+.toast-card__close .icon { margin: 0; }
 .toast-card__title { display: block; color: #0a0a0a; font-size: .95rem; line-height: 1.3; }
 .toast-card__text { margin: .15rem 0 0; color: #2b3440; font-size: .875rem; line-height: 1.4; overflow-wrap: anywhere; }
 .toast-card__link { display: inline-block; margin-top: .35rem; color: var(--brand); font-weight: 600; font-size: .875rem; }
@@ -33,7 +35,3 @@ main { flex: 1; }
 .toast-card.is-paused .toast-card__bar { animation-play-state: paused; }
 @keyframes toast-countdown { to { transform: scaleX(0); } }
 @media (prefers-reduced-motion: reduce) { .toast-card { transform: none; transition: opacity .2s; } .toast-card__bar { animation: none; display: none; } }
-
-/* icons inside headings, stat cards and card headers are blue; text stays black */
-h1 > .bi, h2 > .bi, .card-header .bi, .stat-card .bi, .btn-link .bi, .list-group-item .bi { color: var(--brand); }
-.btn-primary .bi, .btn-success .bi, .btn-danger .bi, .btn-outline-primary:hover .bi, .btn-outline-danger:hover .bi { color: inherit; }

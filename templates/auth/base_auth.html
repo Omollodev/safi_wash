@@ -18,12 +18,12 @@
         <span class="ticket__tag">Example job</span>
       </div>
       <ol class="ticket__steps">
-        <li class="is-done"><i class="bi bi-check-lg"></i><span>Checked in</span><time>9:02</time></li>
-        <li class="is-done"><i class="bi bi-check-lg"></i><span>Exterior wash</span><time>9:21</time></li>
-        <li class="is-now"><i class="bi bi-droplet-fill"></i><span>Interior vacuum</span><time>In progress</time></li>
-        <li><i class="bi bi-circle"></i><span>Ready for pickup</span><time></time></li>
+        <li class="is-done">{% icon "check" %}<span>Checked in</span><time>9:02</time></li>
+        <li class="is-done">{% icon "check" %}<span>Exterior wash</span><time>9:21</time></li>
+        <li class="is-now">{% icon "droplet" %}<span>Interior vacuum</span><time>In progress</time></li>
+        <li>{% icon "circle" %}<span>Ready for pickup</span><time></time></li>
       </ol>
-      <div class="ticket__foot"><span>KES 900</span><span class="ticket__pay"><i class="bi bi-phone"></i> Pay with M-Pesa</span></div>
+      <div class="ticket__foot"><span>KES 900</span><span class="ticket__pay">{% icon "smartphone" %}Pay with M-Pesa</span></div>
     </div>
   </div>
   <p class="auth__fine">{{ BUSINESS.address }}<br>{{ BUSINESS.hours }}</p>
@@ -36,7 +36,7 @@
     {% endfor %}
     {% block auth_body %}{% endblock %}
   </div>
-  <a class="auth__back" href="{% url 'dashboard:landing' %}"><i class="bi bi-arrow-left" aria-hidden="true"></i> Back to home page</a>
+  <a class="auth__back" href="{% url 'dashboard:landing' %}">{% icon "arrow-left" %}Back to home page</a>
 </section>
 {% endblock %}
 
