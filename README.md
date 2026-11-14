@@ -18,7 +18,7 @@ Highlights: job workflow with enforced rules, live job board, extra-service aler
 ## Quick start (5 minutes)
 
 ```bash
-git clone <your-repo-url> carwash-pro && cd carwash-pro
+https://github.com/Omollodev/safi_wash.git && cd safi_wash
 python -m venv .venv && source .venv/bin/activate      # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
 cp .env.example .env                                    # defaults work as-is for local use
@@ -117,8 +117,3 @@ MIT — see [LICENSE](LICENSE).
 
 ## Live notifications
 Signed-in users get a white pop-up card in the corner when something new happens (a job assigned, an extra service, a payment). The browser checks for new notifications every 8 seconds (paused while the tab is hidden), the card fades after 7 seconds, and hovering over it pauses the timer. Change the timing in `templates/base.html` (`pollMs`, `toastMs`). The code is in `static/js/toast.js`.
-
-## Icons and the staff dashboard
-Icons are [Lucide](https://lucide.dev) (ISC licence), served from one small file, `static/img/icons.svg`, so there is no CDN, no icon font and no JavaScript needed. Use them in a template with `{% icon "clock" %}` (add a size or colour class as a second argument, for example `{% icon "clock" "icon-lg" %}`). JavaScript uses `CARWASH.icon("clock")`. To add an icon, list its name in `scripts/build_icon_sprite.py` and run the script; the test suite fails if a page uses an icon the sprite does not have.
-
-The staff dashboard (`/dashboard/`) shows only real records: headline cards, a live job board (it refreshes every 10 seconds, and its Start / Complete / Resume buttons use the normal job-status endpoint), revenue for the last 7 or 30 days, recent activity, recent payments and worker availability. A trend arrow appears only when yesterday has a figure to compare with. The code is in `apps/dashboard/selectors.py`, `templates/dashboard/` and `static/js/dashboard.js`.
